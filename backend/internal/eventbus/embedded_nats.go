@@ -2,6 +2,8 @@ package eventbus
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/nats-io/nats-server/v2/server"
@@ -15,6 +17,9 @@ type EmbeddedNATSServer struct {
 // StartEmbeddedNATS starts an embedded NATS server with JetStream enabled
 // Use this for local development only. In production, use Synadia Cloud or dedicated NATS cluster.
 func StartEmbeddedNATS() (*EmbeddedNATSServer, error) {
+	// Use temp directory for cloud deployment compatibility (Render, etc.)
+	storeDir := filepath.Join(os.TempDir(), "nats-data")
+
 	opts := &server.Options{
 		Host:           "127.0.0.1",
 		Port:           4222,
@@ -22,7 +27,7 @@ func StartEmbeddedNATS() (*EmbeddedNATSServer, error) {
 		NoSigs:         true,
 		MaxControlLine: 4096,
 		JetStream:      true,
-		StoreDir:       "./nats-data", // Persist JetStream data locally
+		StoreDir:       storeDir, // Use temp dir for cloud compatibility
 	}
 
 	ns, err := server.NewServer(opts)

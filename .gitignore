@@ -1,0 +1,35 @@
+# ===========================================
+# Project Antigravity - Git Ignore
+# SECURITY: Never commit secrets!
+# ===========================================
+
+# Environment files (CRITICAL - Never commit!)
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+!.env.*.template
+
+# MCP Credentials (CRITICAL)
+# .env.mcp
+mcp-secrets.json
+
+# IDE
+.idea/
+# .vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+build/
+dist/
+*.exe
+
+# Logs
+*.log
+logs/

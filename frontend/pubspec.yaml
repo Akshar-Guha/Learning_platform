@@ -1,0 +1,51 @@
+name: antigravity
+description: Social Accountability Platform - Build habits with your squad.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management (Riverpod)
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  
+  # Supabase SDK
+  supabase_flutter: ^2.3.2
+  
+  # Routing
+  go_router: ^13.2.0
+  
+  # UI/UX
+  flutter_animate: ^4.3.0
+  google_fonts: ^6.1.0
+  loading_animation_widget: ^1.2.0+4
+  iconsax: ^0.0.8
+  
+  # Utilities
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
+  equatable: ^2.0.5
+  flutter_dotenv: ^5.1.0
+  http: ^1.6.0
+  timeago: ^3.7.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.8
+
+flutter:
+  uses-material-design: true
+  
+  # Assets - .env file for flutter_dotenv
+  assets:
+    - .env
+
+  # Using google_fonts package for fonts (auto-downloads)

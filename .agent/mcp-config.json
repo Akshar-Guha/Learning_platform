@@ -1,0 +1,47 @@
+{
+  "_description": "MCP Server Configuration for Antigravity Learning Platform",
+  "_instructions": "Copy the 'mcpServers' block into your IDE settings (VS Code settings.json or Cursor config)",
+  
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "YOUR_SUPABASE_ACCESS_TOKEN"
+      ],
+      "_help": "Get your access token from: https://supabase.com/dashboard/account/tokens"
+    },
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/mcp-server-stripe"],
+      "env": {
+        "STRIPE_API_KEY": "YOUR_STRIPE_SECRET_KEY"
+      },
+      "_help": "Get your API key from: https://dashboard.stripe.com/apikeys"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN"
+      },
+      "_help": "Create a token at: https://github.com/settings/tokens (needs repo, read:org scopes)"
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "_help": "No configuration needed - ready to use!"
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y", 
+        "@modelcontextprotocol/server-postgres",
+        "YOUR_DATABASE_URL"
+      ],
+      "_help": "Format: postgresql://user:password@host:5432/database"
+    }
+  }
+}

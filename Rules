@@ -1,0 +1,10 @@
+## I. The "Sync" Protocol
+1.  **API First:** Agent Alpha defines the Contract.
+2.  **CORS Rule:** Agent Alpha MUST whitelist the Vercel Domain in the Go Backend, or the Frontend will fail to fetch data.
+3.  **Handover:** Alpha -> Beta -> Gamma.
+
+## II. Technical Rules
+* **Frontend:** Flutter Web. Use `canvaskit` renderer for performance.
+* **Routing:** Agent Gamma must create `vercel.json` to handle SPA routing (rewrites to index.html).
+* **Backend:** Go (Clean Arch).
+* **Database:** RLS is mandatory.

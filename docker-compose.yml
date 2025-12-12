@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Go Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: antigravity-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    networks:
+      - antigravity-net
+
+  # Redis (Future proofing for "The Logic Engine" phase)
+  redis:
+    image: redis:alpine
+    container_name: antigravity-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - antigravity-net
+
+networks:
+  antigravity-net:
+    driver: bridge

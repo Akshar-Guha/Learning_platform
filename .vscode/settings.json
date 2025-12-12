@@ -1,0 +1,86 @@
+{
+    "gemini.mcp.servers": {
+        "supabase": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@supabase/mcp-server-supabase@latest",
+                "--access-token",
+                "sbp_1ecc2f4de0f51ca5997b4fb0e8c6bc535859e12e"
+            ]
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+            }
+        },
+        "fetch": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-fetch"
+            ]
+        }
+    },
+    "mcp.servers": {
+        "supabase": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@supabase/mcp-server-supabase@latest",
+                "--access-token",
+                "sbp_1ecc2f4de0f51ca5997b4fb0e8c6bc535859e12e"
+            ]
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+            }
+        },
+        "fetch": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-fetch"
+            ]
+        }
+    },
+    "google.mcp.servers": {
+        "supabase": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@supabase/mcp-server-supabase@latest",
+                "--access-token",
+                "sbp_1ecc2f4de0f51ca5997b4fb0e8c6bc535859e12e"
+            ]
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+            }
+        },
+        "fetch": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-fetch"
+            ]
+        }
+    }
+}

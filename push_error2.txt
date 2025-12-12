@@ -1,0 +1,54 @@
+﻿git : remote: error: GH013: Repository rule violations found 
+for refs/heads/dev.        
+At line:1 char:1
++ git push -u origin dev --force 2>&1 | Out-File -FilePath 
+push_error2. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (remote: error: ... 
+   ds/dev.        :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+remote: 
+remote: - GITHUB PUSH PROTECTION        
+remote:   ΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇö
+ΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓ
+ÇöΓÇö        
+remote:     Resolve the following violations before pushing 
+again        
+remote: 
+remote:     - Push cannot contain secrets        
+remote: 
+remote:             
+remote:      (?) Learn how to resolve a blocked push        
+remote:      https://docs.github.com/code-security/secret-scanni
+ng/working-with-secret-scanning-and-push-protection/working-with
+-push-protection-from-the-command-line#resolving-a-blocked-push 
+       
+remote:             
+remote:             
+remote:       ΓÇöΓÇö GitHub Personal Access Token ΓÇöΓÇöΓÇöΓÇöΓÇ
+öΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇö        
+remote:        locations:        
+remote:          - commit: 
+8d5b6794c7a25a7ec7222d096a102fe3b537c8d7        
+remote:            path: .vscode/settings.json:19        
+remote:          - commit: 
+8d5b6794c7a25a7ec7222d096a102fe3b537c8d7        
+remote:            path: .vscode/settings.json:47        
+remote:          - commit: 
+8d5b6794c7a25a7ec7222d096a102fe3b537c8d7        
+remote:            path: .vscode/settings.json:75        
+remote:             
+remote:        (?) To push, remove secret from commit(s) or 
+follow this URL to allow the secret.        
+remote:        https://github.com/Akshar-Guha/Learning_platform/
+security/secret-scanning/unblock-secret/36kLIhgnsviwDXnu2rCAOHZY
+7xZ        
+remote:             
+remote: 
+remote: 
+To https://github.com/Akshar-Guha/Learning_platform.git
+ ! [remote rejected] dev -> dev (push declined due to 
+repository rule violations)
+error: failed to push some refs to 
+'https://github.com/Akshar-Guha/Learning_platform.git'

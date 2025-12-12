@@ -1,0 +1,9 @@
+# Flutter specific ignores
+#.env
+#.env.local
+.dart_tool/
+.packages
+build/
+*.iml
+.idea/
+*.log

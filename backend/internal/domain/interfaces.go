@@ -65,6 +65,7 @@ type StreakRepository interface {
 	GetUserStreak(ctx context.Context, userID string, includeHistory bool, historyDays int) (*StreakData, error)
 	GetActivityHistory(ctx context.Context, userID string, days int) ([]ActivityDay, error)
 	GetLeaderboard(ctx context.Context, limit int) ([]LeaderboardEntry, error)
+	GetAtRiskUsers(ctx context.Context) ([]AtRiskUser, error)
 	RecalculateAllStreaks(ctx context.Context) error
 }
 

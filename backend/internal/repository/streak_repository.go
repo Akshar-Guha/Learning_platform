@@ -241,3 +241,43 @@ func (r *StreakRepository) RecalculateAllStreaks(ctx context.Context) error {
 	_, err := r.db.ExecContext(ctx, query)
 	return err
 }
+
+// GetAtRiskUsers returns users with active streaks who haven't logged activity today
+func (r *StreakRepository) GetAtRiskUsers(ctx context.Context) ([]domain.AtRiskUser, error) {
+	// Find users with active streaks who haven't logged activity today
+	// We check if last_active_date is strictly before today (meaning yesterday or earlier)
+	query := `
+		SELECT 
+			id, 
+			display_name, 
+			current_streak, 
+			last_active_date
+		FROM profiles
+		WHERE 
+			current_streak > 0 
+			AND (last_active_date IS NULL OR last_active_date < CURRENT_DATE)
+	`
+	// Note: We might want to filter by timezone if we supported per-user timezones
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []domain.AtRiskUser{}
+	for rows.Next() {
+		var user domain.AtRiskUser
+		if err := rows.Scan(
+			&user.UserID,
+			&user.DisplayName,
+			&user.CurrentStreak,
+			&user.LastActivityDate,
+		); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

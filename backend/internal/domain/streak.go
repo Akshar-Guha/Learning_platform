@@ -80,3 +80,11 @@ type StreakCalculationResult struct {
 	LongestStreak  int        `db:"longest_streak"`
 	LastActiveDate *time.Time `db:"last_active_date"`
 }
+
+// AtRiskUser represents a user whose streak is at risk of breaking
+type AtRiskUser struct {
+	UserID           string
+	DisplayName      string
+	CurrentStreak    int
+	LastActivityDate time.Time
+}

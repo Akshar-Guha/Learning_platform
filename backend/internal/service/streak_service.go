@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/antigravity/backend/internal/domain"
 	"github.com/antigravity/backend/internal/eventbus"
@@ -115,12 +114,4 @@ func (s *StreakService) ValidateActivityType(activityType domain.ActivityType) e
 		return fmt.Errorf("%w: %s", ErrInvalidActivityType, activityType)
 	}
 	return nil
-}
-
-// AtRiskUser represents a user whose streak is at risk
-type AtRiskUser struct {
-	UserID           string
-	DisplayName      string
-	CurrentStreak    int
-	LastActivityDate time.Time
 }

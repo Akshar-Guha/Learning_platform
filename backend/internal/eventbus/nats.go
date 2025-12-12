@@ -15,7 +15,19 @@ type EventBus struct {
 }
 
 func NewEventBus(url string) (*EventBus, error) {
-	nc, err := nats.Connect(url)
+	return NewEventBusWithCreds(url, "")
+}
+
+// NewEventBusWithCreds connects to NATS with optional Synadia Cloud credentials
+func NewEventBusWithCreds(url string, credsFile string) (*EventBus, error) {
+	var opts []nats.Option
+
+	// If credentials file is provided (Synadia Cloud), use it
+	if credsFile != "" {
+		opts = append(opts, nats.UserCredentials(credsFile))
+	}
+
+	nc, err := nats.Connect(url, opts...)
 	if err != nil {
 		return nil, err
 	}

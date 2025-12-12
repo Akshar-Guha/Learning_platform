@@ -34,15 +34,19 @@ func main() {
 	defer db.Close()
 
 	// Initialize Infrastructure
-	// Start embedded NATS server for development
-	embeddedNats, err := eventbus.StartEmbeddedNATS()
-	if err != nil {
-		log.Printf("Warning: Failed to start embedded NATS: %v", err)
-	} else {
-		defer embeddedNats.Shutdown()
+	// Start embedded NATS server for development (only if no external NATS URL configured)
+	var embeddedNats *eventbus.EmbeddedNATSServer
+	if cfg.NatsCredsFile == "" {
+		embeddedNats, err = eventbus.StartEmbeddedNATS()
+		if err != nil {
+			log.Printf("Warning: Failed to start embedded NATS: %v", err)
+		} else {
+			defer embeddedNats.Shutdown()
+		}
 	}
 
-	natsBus, err := eventbus.NewEventBus(cfg.NatsURL)
+	// Connect to NATS (embedded or Synadia Cloud)
+	natsBus, err := eventbus.NewEventBusWithCreds(cfg.NatsURL, cfg.NatsCredsFile)
 	if err != nil {
 		log.Printf("Warning: Failed to connect to NATS: %v", err)
 		// Proceeding without NATS for dev (or fail if required).

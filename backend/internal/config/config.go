@@ -14,6 +14,7 @@ type Config struct {
 	AllowedOrigins    []string
 	Port              string
 	NatsURL           string
+	NatsCredsFile     string // For Synadia Cloud authentication
 	GroqAPIKey        string
 }
 
@@ -32,7 +33,8 @@ func Load() *Config {
 		AllowedOrigins:    strings.Split(allowedOrigins, ","),
 		Port:              getEnvOrDefault("PORT", "8080"),
 		NatsURL:           getEnvOrDefault("NATS_URL", "nats://localhost:4222"),
-		GroqAPIKey:        getEnvOrDefault("GROQ_API_KEY", ""), // Optional for local dev/mocking
+		NatsCredsFile:     getEnvOrDefault("NATS_CREDS_FILE", ""), // For Synadia Cloud
+		GroqAPIKey:        getEnvOrDefault("GROQ_API_KEY", ""),
 	}
 }
 

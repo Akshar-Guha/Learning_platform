@@ -3,9 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"net"
-	"net/url"
-	"strings"
 
 	"fmt"
 
@@ -119,48 +116,8 @@ func (r *ProfileRepository) Update(ctx context.Context, userID uuid.UUID, req *d
 }
 
 // NewPostgresDB creates a new PostgreSQL database connection
-// Forces IPv4 resolution to avoid Render's IPv6 connectivity issues
 func NewPostgresDB(databaseURL string) (*sql.DB, error) {
-	// Parse the database URL to extract hostname
-	parsedURL, err := url.Parse(databaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse database URL: %w", err)
-	}
-
-	// Extract hostname (remove port if present)
-	hostname := parsedURL.Hostname()
-
-	// Resolve hostname to IPv4 address
-	ips, err := net.LookupIP(hostname)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve hostname %s: %w", hostname, err)
-	}
-
-	// Find first IPv4 address
-	var ipv4 string
-	for _, ip := range ips {
-		if ip.To4() != nil {
-			ipv4 = ip.String()
-			break
-		}
-	}
-
-	if ipv4 == "" {
-		return nil, fmt.Errorf("no IPv4 address found for hostname %s", hostname)
-	}
-
-	// Replace hostname with IPv4 address in the connection string
-	// Handle both cases: hostname with port and without port
-	var modifiedURL string
-	if parsedURL.Port() != "" {
-		// Replace "hostname:port" with "ipv4:port"
-		modifiedURL = strings.Replace(databaseURL, parsedURL.Host, ipv4+":"+parsedURL.Port(), 1)
-	} else {
-		// Replace "hostname" with "ipv4"
-		modifiedURL = strings.Replace(databaseURL, hostname, ipv4, 1)
-	}
-
-	db, err := sql.Open("postgres", modifiedURL)
+	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
 		return nil, err
 	}

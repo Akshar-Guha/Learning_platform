@@ -119,10 +119,11 @@ func (r *ProfileRepository) Update(ctx context.Context, userID uuid.UUID, req *d
 
 // NewPostgresDB creates a new PostgreSQL database connection
 func NewPostgresDB(databaseURL string) (*sql.DB, error) {
-	// Auto-fix: Force Supavisor Transaction Pooler (IPv4)
+	// Auto-fix: Force Supavisor Session Pooler (IPv4 compatible)
 	// Render fails to connect to the direct IPv6 hostname (db.REF.supabase.co).
-	// We must switch to the pooler hostname (aws-0-REGION.pooler.supabase.com) which supports IPv4.
-	// Format: postgres://[user].[ref]:[pass]@[pooler-host]:6543/[db]
+	// We switch to the pooler hostname (aws-0-REGION.pooler.supabase.com) which supports IPv4.
+	// We use DIRECT SESSION MODE (Port 5432) to avoid "Tenant or user not found" errors
+	// that occur with Transaction Mode (6543) when using the 'postgres' superuser.
 
 	// Check if we are using the direct Supabase URL
 	if strings.Contains(databaseURL, "supabase.co") && strings.Contains(databaseURL, "db.") {
@@ -134,18 +135,21 @@ func NewPostgresDB(databaseURL string) (*sql.DB, error) {
 				projectRef := hostParts[1]
 
 				// 1. Switch Host to Pooler (Hardcoded to ap-south-1 as confirmed)
+				// Replaces entire hostname to ensure cleaner switch
 				u.Host = strings.Replace(u.Host, u.Hostname(), "aws-0-ap-south-1.pooler.supabase.com", 1)
 
-				// 2. Switch Port to 6543 (Transaction Mode)
-				if u.Port() != "6543" {
-					u.Host = strings.Replace(u.Host, ":"+u.Port(), ":6543", 1)
-				} else if !strings.Contains(u.Host, ":") {
-					u.Host += ":6543" // Add port if missing
+				// 2. Ensure Port is 5432 (Session Mode)
+				// If port is present, ensure it's 5432. If missing, default is 5432 anyway.
+				if u.Port() != "5432" && u.Port() != "" {
+					u.Host = strings.Replace(u.Host, ":"+u.Port(), ":5432", 1)
 				}
+				// Note: If port is missing from Host string, it defaults to standard when using lib/pq,
+				// but for clarity in the URL string we leave it or ensure it's correct if valid.
 
-				// 3. Update User to [user].[ref] format required by Pooler
+				// 3. Update User to [user].[ref] format (Required for Pooler)
 				if u.User != nil {
 					username := u.User.Username()
+					// Only append ref if not already present
 					if !strings.Contains(username, ".") {
 						password, hasPassword := u.User.Password()
 						newUsername := fmt.Sprintf("%s.%s", username, projectRef)
@@ -160,7 +164,7 @@ func NewPostgresDB(databaseURL string) (*sql.DB, error) {
 
 				// Apply the new URL
 				databaseURL = u.String()
-				fmt.Println("FYI: Switched to Supavisor Pooler for IPv4 support")
+				fmt.Println("FYI: Switched to Supavisor Session Pooler (port 5432) for IPv4 support")
 			}
 		}
 	}

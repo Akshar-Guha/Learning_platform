@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"fmt"
 
@@ -117,6 +118,12 @@ func (r *ProfileRepository) Update(ctx context.Context, userID uuid.UUID, req *d
 
 // NewPostgresDB creates a new PostgreSQL database connection
 func NewPostgresDB(databaseURL string) (*sql.DB, error) {
+	// Auto-fix: Switch to Transaction Pooler (Port 6543) for better cloud connectivity
+	// This resolves IPv6/IPv4 direct connection issues on Render where direct port 5432 is unreachable
+	if strings.Contains(databaseURL, "supabase.co") && strings.Contains(databaseURL, ":5432") {
+		databaseURL = strings.Replace(databaseURL, ":5432", ":6543", 1)
+	}
+
 	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
 		return nil, err

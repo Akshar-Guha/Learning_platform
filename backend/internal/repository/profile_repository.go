@@ -3,8 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"net/url"
-	"strings"
 
 	"fmt"
 
@@ -119,63 +117,22 @@ func (r *ProfileRepository) Update(ctx context.Context, userID uuid.UUID, req *d
 
 // NewPostgresDB creates a new PostgreSQL database connection
 func NewPostgresDB(databaseURL string) (*sql.DB, error) {
-	// Auto-fix: Force Supavisor Session Pooler (IPv4 compatible)
-	// Render fails to connect to the direct IPv6 hostname (db.REF.supabase.co).
-	// We switch to the pooler hostname (aws-0-REGION.pooler.supabase.com) which supports IPv4.
-	// We use DIRECT SESSION MODE (Port 5432) to avoid "Tenant or user not found" errors
-	// that occur with Transaction Mode (6543) when using the 'postgres' superuser.
-
-	// Check if we are using the direct Supabase URL
-	if strings.Contains(databaseURL, "supabase.co") && strings.Contains(databaseURL, "db.") {
-		u, err := url.Parse(databaseURL)
-		if err == nil {
-			hostParts := strings.Split(u.Hostname(), ".")
-			// Expecting db.[ref].supabase.co
-			if len(hostParts) >= 2 && hostParts[0] == "db" {
-				projectRef := hostParts[1]
-
-				// 1. Switch Host to Pooler (Hardcoded to ap-south-1 as confirmed)
-				// Replaces entire hostname to ensure cleaner switch
-				u.Host = strings.Replace(u.Host, u.Hostname(), "aws-0-ap-south-1.pooler.supabase.com", 1)
-
-				// 2. Ensure Port is 5432 (Session Mode)
-				// If port is present, ensure it's 5432. If missing, default is 5432 anyway.
-				if u.Port() != "5432" && u.Port() != "" {
-					u.Host = strings.Replace(u.Host, ":"+u.Port(), ":5432", 1)
-				}
-				// Note: If port is missing from Host string, it defaults to standard when using lib/pq,
-				// but for clarity in the URL string we leave it or ensure it's correct if valid.
-
-				// 3. Update User to [user].[ref] format (Required for Pooler)
-				if u.User != nil {
-					username := u.User.Username()
-					// Only append ref if not already present
-					if !strings.Contains(username, ".") {
-						password, hasPassword := u.User.Password()
-						newUsername := fmt.Sprintf("%s.%s", username, projectRef)
-
-						if hasPassword {
-							u.User = url.UserPassword(newUsername, password)
-						} else {
-							u.User = url.User(newUsername)
-						}
-					}
-				}
-
-				// Apply the new URL
-				databaseURL = u.String()
-				fmt.Println("FYI: Switched to Supavisor Session Pooler (port 5432) for IPv4 support")
-			}
-		}
-	}
+	// Note: Previous attempts to auto-rewrite to pooler hostnames failed due to
+	// Supabase pooler authentication restrictions with the 'postgres' superuser.
+	//
+	// SOLUTION: Use the DATABASE_URL as-provided from env vars.
+	// If connection fails, user should either:
+	// 1. Enable IPv6 support on Render (in project settings)
+	// 2. Create a dedicated database user (not 'postgres') and update DATABASE_URL
+	// 3. Use Supabase Connection Pooling string directly from Supabase dashboard
 
 	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open database connection: %w\nHINT: Verify DATABASE_URL format in your environment variables", err)
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to ping database: %w\nHINT: This usually means network connectivity issues or invalid credentials.\nFor Render deployment:\n  - Check if IPv6 is enabled in Render project settings\n  - Or use Supabase's Connection Pooling string from your dashboard\n  - Or create a non-superuser database role", err)
 	}
 
 	// Connection pool settings

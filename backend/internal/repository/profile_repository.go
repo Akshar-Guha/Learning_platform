@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"net/url"
 	"strings"
 
 	"fmt"
@@ -118,10 +119,50 @@ func (r *ProfileRepository) Update(ctx context.Context, userID uuid.UUID, req *d
 
 // NewPostgresDB creates a new PostgreSQL database connection
 func NewPostgresDB(databaseURL string) (*sql.DB, error) {
-	// Auto-fix: Switch to Transaction Pooler (Port 6543) for better cloud connectivity
-	// This resolves IPv6/IPv4 direct connection issues on Render where direct port 5432 is unreachable
-	if strings.Contains(databaseURL, "supabase.co") && strings.Contains(databaseURL, ":5432") {
-		databaseURL = strings.Replace(databaseURL, ":5432", ":6543", 1)
+	// Auto-fix: Force Supavisor Transaction Pooler (IPv4)
+	// Render fails to connect to the direct IPv6 hostname (db.REF.supabase.co).
+	// We must switch to the pooler hostname (aws-0-REGION.pooler.supabase.com) which supports IPv4.
+	// Format: postgres://[user].[ref]:[pass]@[pooler-host]:6543/[db]
+
+	// Check if we are using the direct Supabase URL
+	if strings.Contains(databaseURL, "supabase.co") && strings.Contains(databaseURL, "db.") {
+		u, err := url.Parse(databaseURL)
+		if err == nil {
+			hostParts := strings.Split(u.Hostname(), ".")
+			// Expecting db.[ref].supabase.co
+			if len(hostParts) >= 2 && hostParts[0] == "db" {
+				projectRef := hostParts[1]
+
+				// 1. Switch Host to Pooler (Hardcoded to ap-south-1 as confirmed)
+				u.Host = strings.Replace(u.Host, u.Hostname(), "aws-0-ap-south-1.pooler.supabase.com", 1)
+
+				// 2. Switch Port to 6543 (Transaction Mode)
+				if u.Port() != "6543" {
+					u.Host = strings.Replace(u.Host, ":"+u.Port(), ":6543", 1)
+				} else if !strings.Contains(u.Host, ":") {
+					u.Host += ":6543" // Add port if missing
+				}
+
+				// 3. Update User to [user].[ref] format required by Pooler
+				if u.User != nil {
+					username := u.User.Username()
+					if !strings.Contains(username, ".") {
+						password, hasPassword := u.User.Password()
+						newUsername := fmt.Sprintf("%s.%s", username, projectRef)
+
+						if hasPassword {
+							u.User = url.UserPassword(newUsername, password)
+						} else {
+							u.User = url.User(newUsername)
+						}
+					}
+				}
+
+				// Apply the new URL
+				databaseURL = u.String()
+				fmt.Println("FYI: Switched to Supavisor Pooler for IPv4 support")
+			}
+		}
 	}
 
 	db, err := sql.Open("postgres", databaseURL)

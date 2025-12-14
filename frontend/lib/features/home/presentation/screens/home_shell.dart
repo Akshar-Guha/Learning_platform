@@ -73,7 +73,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Antigravity'),
+        title: const Text('ULP'),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,

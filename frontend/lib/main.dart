@@ -33,20 +33,20 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: AntigravityApp(),
+      child: ULPApp(),
     ),
   );
 }
 
-class AntigravityApp extends ConsumerWidget {
-  const AntigravityApp({super.key});
+class ULPApp extends ConsumerWidget {
+  const ULPApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Antigravity',
+      title: 'ULP',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/antigravity/backend/internal/ai"
-	"github.com/antigravity/backend/internal/domain"
-	"github.com/antigravity/backend/internal/eventbus"
-	"github.com/antigravity/backend/internal/repository"
+	"github.com/ulp/backend/internal/ai"
+	"github.com/ulp/backend/internal/domain"
+	"github.com/ulp/backend/internal/eventbus"
+	"github.com/ulp/backend/internal/repository"
 )
 
 // NudgeSubscriber listens to streak risk events and creates AI nudges
@@ -32,11 +32,11 @@ func (s *NudgeSubscriber) Start(ctx context.Context) error {
 	log.Println("📡 Starting NudgeSubscriber on events.streak.risk...")
 
 	// Ensure stream exists
-	if err := s.bus.InitStream(ctx, "ANTIGRAVITY", []string{"events.>"}); err != nil {
+	if err := s.bus.InitStream(ctx, "ULP", []string{"events.>"}); err != nil {
 		log.Printf("Warning: Stream init failed (may exist): %v", err)
 	}
 
-	return s.bus.Subscribe(ctx, "ANTIGRAVITY", eventbus.SubjectStreakRisk, "nudge_processor", s.handleMessage)
+	return s.bus.Subscribe(ctx, "ULP", eventbus.SubjectStreakRisk, "nudge_processor", s.handleMessage)
 }
 
 func (s *NudgeSubscriber) handleMessage(msg []byte) error {

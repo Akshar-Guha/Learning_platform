@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/antigravity/backend/internal/domain"
-	"github.com/antigravity/backend/internal/handler"
-	"github.com/antigravity/backend/internal/middleware"
-	"github.com/antigravity/backend/internal/mocks"
+	"github.com/ulp/backend/internal/domain"
+	"github.com/ulp/backend/internal/handler"
+	"github.com/ulp/backend/internal/middleware"
+	"github.com/ulp/backend/internal/mocks"
 	"github.com/google/uuid"
 )
 

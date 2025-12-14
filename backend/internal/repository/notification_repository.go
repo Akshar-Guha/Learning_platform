@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/antigravity/backend/internal/domain"
+	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
 )
 

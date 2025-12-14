@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/antigravity/backend/internal/ai"
-	"github.com/antigravity/backend/internal/domain"
-	"github.com/antigravity/backend/internal/eventbus"
-	"github.com/antigravity/backend/internal/repository"
+	"github.com/ulp/backend/internal/ai"
+	"github.com/ulp/backend/internal/domain"
+	"github.com/ulp/backend/internal/eventbus"
+	"github.com/ulp/backend/internal/repository"
 	"github.com/google/uuid"
 )
 
@@ -28,7 +28,7 @@ func NewNudgeService(repo *repository.NotificationRepository, ai *ai.GroqClient,
 
 // StartConsumer subscribes to risk events and processes them
 func (s *NudgeService) StartConsumer(ctx context.Context) error {
-	streamName := "ANTIGRAVITY"
+	streamName := "ULP"
 	subject := "events.streak.risk"
 
 	// Ensure stream exists

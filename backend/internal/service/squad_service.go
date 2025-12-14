@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/antigravity/backend/internal/domain"
+	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
 )
 

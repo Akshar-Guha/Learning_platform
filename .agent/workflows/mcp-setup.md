@@ -1,10 +1,10 @@
 ---
-description: How to configure MCP servers for the Antigravity project
+description: How to configure MCP servers for the ULP project
 ---
 
 # MCP Server Setup Workflow
 
-This workflow guides you through setting up all required MCP (Model Context Protocol) servers for the Antigravity Learning Platform.
+This workflow guides you through setting up all required MCP (Model Context Protocol) servers for the ULP Learning Platform.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ This workflow guides you through setting up all required MCP (Model Context Prot
 ### 1.1 Supabase Access Token
 1. Go to https://supabase.com/dashboard/account/tokens
 2. Click "Generate new token"
-3. Name it "Antigravity MCP"
+3. Name it "ULP MCP"
 4. Copy the token (you won't see it again!)
 
 ### 1.2 Stripe API Key

@@ -15,7 +15,7 @@ class AppConfig {
       dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080/api/v1';
 
   // App Constants
-  static const String appName = 'Antigravity';
+  static const String appName = 'ULP';
   static const String appVersion = '1.0.0';
 
   // Feature Flags

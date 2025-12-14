@@ -1,4 +1,4 @@
-# Project Antigravity: Atomic Accountability Squads
+# Project ULP: Atomic Accountability Squads
 
 ## 1. Project Goal
 To solve "Learning in Isolation" for college students by creating cooperative "Squads" that track habits and streaks. The core value is **proven discipline** (Consistency Score) which can be monetized via a "Recruiter Dashboard."

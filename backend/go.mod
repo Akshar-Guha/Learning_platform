@@ -1,4 +1,4 @@
-module github.com/antigravity/backend
+module github.com/ulp/backend
 
 go 1.24.0
 

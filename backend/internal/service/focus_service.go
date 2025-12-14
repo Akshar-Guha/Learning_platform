@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/antigravity/backend/internal/domain"
-	"github.com/antigravity/backend/internal/eventbus"
+	"github.com/ulp/backend/internal/domain"
+	"github.com/ulp/backend/internal/eventbus"
 	"github.com/google/uuid"
 )
 

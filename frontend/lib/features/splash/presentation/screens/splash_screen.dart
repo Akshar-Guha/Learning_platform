@@ -106,7 +106,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     shaderCallback: (bounds) =>
                         AppTheme.primaryGradient.createShader(bounds),
                     child: const Text(
-                      'ANTIGRAVITY',
+                      'ULP',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,

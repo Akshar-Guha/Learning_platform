@@ -1,4 +1,4 @@
-# ANTIGRAVITY PROJECT STATE
+# ULP PROJECT STATE
 **Date:** 2025-12-12
 **Phase:** 2 (Logic Engine)
 **Status:** ACTIVE
@@ -27,7 +27,7 @@
 * **Mechanic:** Users form squads of exactly **4 members**.
 * **Logic:** A squad exists as long as members maintain a collective streak.
 * **Interaction:** No debating. Chat is for support and "check-ins" only.
-* **Invite System:** Deep links (`antigravity.app/join/xyz`) to fill empty slots.
+* **Invite System:** Deep links (`ULP.app/join/xyz`) to fill empty slots.
 
 ### B. Body Doubling (The "Work" Mode)
 * **UI:** A "Focus Room" dashboard.
@@ -89,7 +89,7 @@
 
 **2. Stream Configuration:**
 ```
-Stream Name: ANTIGRAVITY
+Stream Name: ULP
 Subjects:
   - events.activity.logged     # User checked in or completed focus
   - events.streak.risk         # Streak is at risk (triggered by cron)
@@ -428,7 +428,7 @@ CREATE TABLE public.notifications (
 ### 🐛 BUG-002: Login Failure / Startup Crash
 *   **Status:** 🔴 BLOCKED (Environment Failure)
 *   **Priority:** Critical
-*   **Description:** Application fails to render on the web, freezing on the native "Loading Antigravity..." splash screen. This persists even after fixing previous logic bugs.
+*   **Description:** Application fails to render on the web, freezing on the native "Loading ULP..." splash screen. This persists even after fixing previous logic bugs.
 *   **Investigation Findings:**
     *   **Startup Freeze:** The app gets stuck on `index.html` loader.
     *   **Renderer Failure:** Both `canvaskit` and `html` renderers fail to paint the first frame.
@@ -437,5 +437,5 @@ CREATE TABLE public.notifications (
     *   **Environment:** `flutter clean` and process restarts did not resolve the issue. Setup appears fundamentally corrupted on the local machine for Web.
 *   **Action Required:** Manual environment reset (delete build folders, restart host, verify Flutter SDK).
 
-**Responsible Agent:** ANTIGRAVITY (Delta)
+**Responsible Agent:** ULP (Delta)
 ```

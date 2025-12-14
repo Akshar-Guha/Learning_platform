@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/antigravity/backend/internal/domain"
+	"github.com/ulp/backend/internal/domain"
 )
 
 // StreakRepository handles database operations for streak management

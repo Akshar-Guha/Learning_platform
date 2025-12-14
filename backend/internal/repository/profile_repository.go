@@ -6,7 +6,7 @@ import (
 
 	"fmt"
 
-	"github.com/antigravity/backend/internal/domain"
+	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )

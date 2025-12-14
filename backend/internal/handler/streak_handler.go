@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/antigravity/backend/internal/domain"
-	"github.com/antigravity/backend/internal/middleware"
-	"github.com/antigravity/backend/internal/service"
+	"github.com/ulp/backend/internal/domain"
+	"github.com/ulp/backend/internal/middleware"
+	"github.com/ulp/backend/internal/service"
 	"github.com/go-chi/chi/v5"
 )
 

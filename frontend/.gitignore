@@ -4,6 +4,7 @@
 .dart_tool/
 .packages
 build/
+!build/web/
 *.iml
 .idea/
 *.log

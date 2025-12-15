@@ -1,0 +1,84 @@
+# =============================================================================
+# Backend CI Workflow - Project Antigravity
+# =============================================================================
+# DEVOPS CONCEPT: Continuous Integration (CI)
+# This workflow automatically runs on every push/PR to validate code quality.
+# It catches bugs BEFORE they reach production.
+# =============================================================================
+
+name: Backend CI
+
+# DEVOPS CONCEPT: Triggers
+# "on" defines WHEN this workflow runs
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'  # Only run when backend files change
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+
+# DEVOPS CONCEPT: Jobs
+# A job is a set of steps that run on a single machine (runner)
+jobs:
+  build-and-test:
+    name: Build & Test Go Backend
+    runs-on: ubuntu-latest  # GitHub-hosted Linux runner
+
+    # DEVOPS CONCEPT: Steps
+    # Steps are individual commands or actions that run sequentially
+    steps:
+      # Step 1: Checkout code from repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Go environment
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: backend/go.sum
+
+      # Step 3: Download dependencies
+      - name: Download Dependencies
+        working-directory: backend
+        run: go mod download
+
+      # Step 4: Linting - Check code formatting
+      # DEVOPS CONCEPT: Code Quality Gates
+      - name: Check Formatting (go fmt)
+        working-directory: backend
+        run: |
+          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+            echo "❌ Code is not formatted. Run 'go fmt ./...' locally."
+            gofmt -s -l .
+            exit 1
+          fi
+          echo "✅ Code formatting is correct"
+
+      # Step 5: Static analysis
+      - name: Static Analysis (go vet)
+        working-directory: backend
+        run: go vet ./...
+
+      # Step 6: Run unit tests
+      # DEVOPS CONCEPT: Automated Testing
+      - name: Run Unit Tests
+        working-directory: backend
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      # Step 7: Build the binary
+      # DEVOPS CONCEPT: Build Verification
+      - name: Build Binary
+        working-directory: backend
+        run: go build -o server ./cmd/server
+
+      # Step 8: Upload coverage report (optional but useful)
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.out
+          fail_ci_if_error: false
+        continue-on-error: true

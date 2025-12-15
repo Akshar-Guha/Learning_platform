@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/config/app_config.dart';
@@ -25,33 +27,45 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Profile> getCurrentProfile() async {
-    final response = await _supabase.functions.invoke(
-      'profile-proxy',
-      body: {
-        'method': 'GET',
-        'endpoint': '$_baseUrl/profile/me',
-        'headers': _headers,
-      },
-    );
+    try {
+      // Call Go backend API directly
+      final response = await http.get(
+        Uri.parse('$_baseUrl/profile/me'),
+        headers: _headers,
+      );
 
-    // If edge function not set up, try direct Supabase query as fallback
-    if (response.status != 200) {
-      // Direct query to profiles table
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) {
-        throw Exception('User not authenticated');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return Profile.fromJson(data);
       }
 
-      final data = await _supabase
-          .from('profiles')
-          .select()
-          .eq('id', userId)
-          .single();
+      // If backend fails, try direct Supabase query as fallback
+      if (response.statusCode == 404 || response.statusCode >= 500) {
+        return await _getProfileFromSupabase();
+      }
 
-      return Profile.fromJson(data);
+      throw Exception('Failed to get profile: ${response.statusCode} - ${response.body}');
+    } catch (e) {
+      // Network error - fallback to Supabase
+      print('⚠️ Backend API error, falling back to Supabase: $e');
+      return await _getProfileFromSupabase();
+    }
+  }
+
+  /// Fallback: Get profile directly from Supabase
+  Future<Profile> _getProfileFromSupabase() async {
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) {
+      throw Exception('User not authenticated');
     }
 
-    return Profile.fromJson(response.data as Map<String, dynamic>);
+    final data = await _supabase
+        .from('profiles')
+        .select()
+        .eq('id', userId)
+        .single();
+
+    return Profile.fromJson(data);
   }
 
   @override

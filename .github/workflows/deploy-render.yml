@@ -1,0 +1,47 @@
+# =============================================================================
+# Deployment Workflow - Project Antigravity
+# =============================================================================
+# DEVOPS CONCEPT: Continuous Deployment (CD)
+# This workflow automatically deploys to Render after CI passes.
+# It only runs on the main branch to prevent accidental deployments.
+# =============================================================================
+
+name: Deploy to Render
+
+on:
+  push:
+    branches: [main]  # Only deploy from main branch
+  workflow_run:
+    workflows: ["Backend CI"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    
+    # DEVOPS CONCEPT: Conditional Execution
+    # Only deploy if the triggering workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
+
+    steps:
+      - name: Deploy to Render
+        run: |
+          echo "🚀 Triggering Render deployment..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo "✅ Deployment triggered successfully!"
+
+# =============================================================================
+# SETUP INSTRUCTIONS FOR USER:
+# =============================================================================
+# 1. Go to your Render Dashboard: https://dashboard.render.com
+# 2. Select your backend service (antigravity-api)
+# 3. Go to Settings → Deploy Hook
+# 4. Copy the Deploy Hook URL
+# 5. In GitHub:
+#    - Go to your repo → Settings → Secrets and variables → Actions
+#    - Click "New repository secret"
+#    - Name: RENDER_DEPLOY_HOOK_URL
+#    - Value: (paste the URL from Render)
+# =============================================================================

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ULP API Tester</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0A0A0F;
+            color: #F8FAFC;
+        }
+        h1 { color: #7C3AED; }
+        input, button {
+            padding: 12px;
+            margin: 5px;
+            border-radius: 8px;
+            border: 1px solid #2A2A3A;
+            background: #12121A;
+            color: white;
+            font-size: 14px;
+        }
+        button {
+            background: linear-gradient(135deg, #7C3AED, #4F46E5);
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.9; }
+        .result {
+            background: #1A1A25;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #2A2A3A;
+            border-radius: 12px;
+        }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+    </style>
+</head>
+<body>
+    <h1>🚀 ULP API Tester</h1>
+    
+    <div class="section">
+        <h3>1. Supabase Auth</h3>
+        <input type="email" id="email" placeholder="Email" value="test@example.com">
+        <input type="password" id="password" placeholder="Password" value="testpass123">
+        <br>
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="signIn()">Sign In</button>
+        <button onclick="getSession()">Get Session</button>
+    </div>
+    
+    <div class="section">
+        <h3>2. API Tests (requires auth)</h3>
+        <button onclick="testHealth()">Test Health</button>
+        <button onclick="testProfile()">Get My Profile</button>
+        <button onclick="testSquads()">List My Squads</button>
+        <button onclick="testStreaks()">Get My Streak</button>
+        <button onclick="testLeaderboard()">Leaderboard</button>
+    </div>
+    
+    <div class="result" id="result">Results will appear here...</div>
+
+    <script>
+        const API_URL = 'https://l-p-api.onrender.com';
+        
+        // Initialize Supabase - You need to set these values
+        const SUPABASE_URL = 'https://txwiedhokoujvvnxqaua.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4d2llZGhva291anZ2bnhxYXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzOTA3NzAsImV4cCI6MjA4MDk2Njc3MH0.RvNqsyipT8HaQ5kPdwcbV-Ia_QMYK6SlM6dgD87KCnw';
+        
+        let supabase;
+        
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch(e) {
+            log('⚠️ Supabase not initialized. Set SUPABASE_URL and SUPABASE_ANON_KEY');
+        }
+        
+        function log(msg, isError = false) {
+            const result = document.getElementById('result');
+            const className = isError ? 'error' : 'success';
+            if (typeof msg === 'object') msg = JSON.stringify(msg, null, 2);
+            result.innerHTML = `<span class="${className}">${new Date().toLocaleTimeString()}</span>\n${msg}`;
+        }
+        
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                log('✅ Sign Up Success:\n' + JSON.stringify(data, null, 2));
+            } catch(e) {
+                log('❌ Sign Up Failed: ' + e.message, true);
+            }
+        }
+        
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                log('✅ Sign In Success:\n' + JSON.stringify(data, null, 2));
+            } catch(e) {
+                log('❌ Sign In Failed: ' + e.message, true);
+            }
+        }
+        
+        async function getSession() {
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                if (error) throw error;
+                log('📋 Session:\n' + JSON.stringify(data, null, 2));
+            } catch(e) {
+                log('❌ Get Session Failed: ' + e.message, true);
+            }
+        }
+        
+        async function getToken() {
+            const { data } = await supabase.auth.getSession();
+            return data.session?.access_token;
+        }
+        
+        async function testHealth() {
+            try {
+                const res = await fetch(`${API_URL}/api/v1/health`);
+                const data = await res.json();
+                log('✅ Health Check:\n' + JSON.stringify(data, null, 2));
+            } catch(e) {
+                log('❌ Health Check Failed: ' + e.message, true);
+            }
+        }
+        
+        async function testProfile() {
+            try {
+                const token = await getToken();
+                if (!token) { log('❌ Not logged in!', true); return; }
+                const res = await fetch(`${API_URL}/api/v1/profile/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                log(`${res.ok ? '✅' : '❌'} Profile:\n` + JSON.stringify(data, null, 2), !res.ok);
+            } catch(e) {
+                log('❌ Profile Failed: ' + e.message, true);
+            }
+        }
+        
+        async function testSquads() {
+            try {
+                const token = await getToken();
+                if (!token) { log('❌ Not logged in!', true); return; }
+                const res = await fetch(`${API_URL}/api/v1/squads`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                log(`${res.ok ? '✅' : '❌'} Squads:\n` + JSON.stringify(data, null, 2), !res.ok);
+            } catch(e) {
+                log('❌ Squads Failed: ' + e.message, true);
+            }
+        }
+        
+        async function testStreaks() {
+            try {
+                const token = await getToken();
+                if (!token) { log('❌ Not logged in!', true); return; }
+                const res = await fetch(`${API_URL}/api/v1/streaks/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                log(`${res.ok ? '✅' : '❌'} Streak:\n` + JSON.stringify(data, null, 2), !res.ok);
+            } catch(e) {
+                log('❌ Streak Failed: ' + e.message, true);
+            }
+        }
+        
+        async function testLeaderboard() {
+            try {
+                const token = await getToken();
+                if (!token) { log('❌ Not logged in!', true); return; }
+                const res = await fetch(`${API_URL}/api/v1/streaks/leaderboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                log(`${res.ok ? '✅' : '❌'} Leaderboard:\n` + JSON.stringify(data, null, 2), !res.ok);
+            } catch(e) {
+                log('❌ Leaderboard Failed: ' + e.message, true);
+            }
+        }
+        
+        // Initial test
+        testHealth();
+    </script>
+</body>
+</html>

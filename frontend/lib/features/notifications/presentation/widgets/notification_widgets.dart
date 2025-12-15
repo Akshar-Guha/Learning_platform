@@ -93,8 +93,6 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Dismissible(
       key: Key(notification.id),
       direction: DismissDirection.endToStart,

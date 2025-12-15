@@ -37,7 +37,7 @@ class CurrentFocusNotifier extends StateNotifier<AsyncValue<FocusSession?>> {
   Future<void> startFocus(String squadId) async {
     state = const AsyncValue.loading();
     try {
-      final response = await _repository.startFocus(squadId);
+      await _repository.startFocus(squadId);
       // Refresh to get full session data
       await _loadCurrentSession();
     } catch (e, st) {

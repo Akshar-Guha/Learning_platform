@@ -28,6 +28,7 @@ class _InviteCodeWidgetState extends State<InviteCodeWidget> {
     await Clipboard.setData(ClipboardData(text: widget.inviteCode));
     setState(() => _copied = true);
     
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Invite code copied!'),

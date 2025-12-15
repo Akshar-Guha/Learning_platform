@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -47,7 +48,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       throw Exception('Failed to get profile: ${response.statusCode} - ${response.body}');
     } catch (e) {
       // Network error - fallback to Supabase
-      print('⚠️ Backend API error, falling back to Supabase: $e');
+      debugPrint('⚠️ Backend API error, falling back to Supabase: $e');
       return await _getProfileFromSupabase();
     }
   }

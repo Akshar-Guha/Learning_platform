@@ -65,7 +65,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     debugPrint('🚀 LoginScreen: build called');
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Container(

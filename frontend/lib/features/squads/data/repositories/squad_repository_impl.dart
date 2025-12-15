@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/config/app_config.dart';
 import '../../domain/models/squad.dart';
 import '../../domain/repositories/squad_repository.dart';
 
@@ -11,15 +10,6 @@ class SquadRepositoryImpl implements SquadRepository {
   SquadRepositoryImpl({SupabaseClient? supabase})
       : _supabase = supabase ?? Supabase.instance.client;
 
-  String get _baseUrl => AppConfig.apiBaseUrl;
-
-  Map<String, String> get _headers {
-    final session = _supabase.auth.currentSession;
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${session?.accessToken ?? ''}',
-    };
-  }
 
   @override
   Future<List<Squad>> getMySquads() async {

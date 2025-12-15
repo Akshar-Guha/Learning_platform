@@ -21,7 +21,7 @@ class HomeShell extends ConsumerStatefulWidget {
 class _HomeShellState extends ConsumerState<HomeShell> {
   int _currentIndex = 0;
 
-  final List<_NavItem> _navItems = [
+  final List<_NavItem> _navItems = const [
     _NavItem(
       icon: Iconsax.home,
       activeIcon: Iconsax.home_15,

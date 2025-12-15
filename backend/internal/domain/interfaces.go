@@ -13,17 +13,18 @@ type ProfileRepository interface {
 	Update(ctx context.Context, userID uuid.UUID, req *UpdateProfileRequest) (*Profile, error)
 }
 
+// SquadRepository defines data access for squads
 type SquadRepository interface {
-	Create(ctx context.Context, userID uuid.UUID, req *CreateSquadRequest) (*Squad, error)
-	GetUserSquads(ctx context.Context, userID uuid.UUID) ([]Squad, error)
+	Create(ctx context.Context, ownerID uuid.UUID, inviteCode string, req *CreateSquadRequest) (*Squad, error)
 	GetByID(ctx context.Context, squadID uuid.UUID) (*Squad, error)
 	GetDetailByID(ctx context.Context, squadID uuid.UUID) (*SquadDetail, error)
-	IsMember(ctx context.Context, squadID, userID uuid.UUID) (bool, error)
+	GetUserSquads(ctx context.Context, userID uuid.UUID) ([]Squad, error)
 	Update(ctx context.Context, squadID uuid.UUID, req *UpdateSquadRequest) (*Squad, error)
 	Delete(ctx context.Context, squadID uuid.UUID) error
 	JoinByInviteCode(ctx context.Context, inviteCode string, userID uuid.UUID) (uuid.UUID, error)
 	RemoveMember(ctx context.Context, squadID, userID uuid.UUID) error
 	RegenerateInviteCode(ctx context.Context, squadID uuid.UUID) (string, error)
+	IsMember(ctx context.Context, squadID, userID uuid.UUID) (bool, error)
 }
 
 type FocusRepository interface {

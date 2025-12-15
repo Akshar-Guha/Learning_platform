@@ -20,15 +20,15 @@ func NewSquadRepository(db *sql.DB) *SquadRepository {
 }
 
 // Create creates a new squad (trigger auto-adds owner as member)
-func (r *SquadRepository) Create(ctx context.Context, ownerID uuid.UUID, req *domain.CreateSquadRequest) (*domain.Squad, error) {
+func (r *SquadRepository) Create(ctx context.Context, ownerID uuid.UUID, inviteCode string, req *domain.CreateSquadRequest) (*domain.Squad, error) {
 	query := `
-		INSERT INTO squads (name, description, owner_id)
-		VALUES ($1, $2, $3)
+		INSERT INTO squads (name, description, owner_id, invite_code)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id, name, description, invite_code, owner_id, max_members, created_at
 	`
 
 	squad := &domain.Squad{}
-	err := r.db.QueryRowContext(ctx, query, req.Name, req.Description, ownerID).Scan(
+	err := r.db.QueryRowContext(ctx, query, req.Name, req.Description, ownerID, inviteCode).Scan(
 		&squad.ID,
 		&squad.Name,
 		&squad.Description,

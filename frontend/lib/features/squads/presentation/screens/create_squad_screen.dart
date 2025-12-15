@@ -31,6 +31,7 @@ class _CreateSquadScreenState extends ConsumerState<CreateSquadScreen> {
   }
 
   Future<void> _createSquad() async {
+    if (_isLoading) return;
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);

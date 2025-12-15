@@ -2,6 +2,10 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/ulp/backend/internal/domain"
@@ -22,7 +26,39 @@ func (s *SquadService) CreateSquad(ctx context.Context, userID uuid.UUID, req *d
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return s.repo.Create(ctx, userID, req)
+
+	// Retry loop for duplicate invite codes
+	maxRetries := 3
+	for i := 0; i < maxRetries; i++ {
+		inviteCode := generateInviteCode()
+		squad, err := s.repo.Create(ctx, userID, inviteCode, req)
+		if err == nil {
+			return squad, nil
+		}
+
+		// Check for duplicate key error (invite code collision)
+		// Postgres error code 23505 is unique_violation, but we might get a wrapped error string
+		if strings.Contains(err.Error(), "duplicate key") || strings.Contains(err.Error(), "unique constraint") {
+			// Collision detected, retry
+			continue
+		}
+
+		// Other error, return immediately
+		return nil, err
+	}
+
+	return nil, fmt.Errorf("failed to generate unique invite code after %d attempts", maxRetries)
+}
+
+// generateInviteCode creates a random 6-character alphanumeric code
+func generateInviteCode() string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, 6)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }
 
 // GetMySquads returns all squads the user belongs to

@@ -9,8 +9,6 @@
 name: Deploy to Render
 
 on:
-  push:
-    branches: [main]  # Only deploy from main branch
   workflow_run:
     workflows: ["Backend CI"]
     types: [completed]

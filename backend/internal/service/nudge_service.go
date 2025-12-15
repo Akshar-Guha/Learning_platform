@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/ulp/backend/internal/ai"
 	"github.com/ulp/backend/internal/domain"
 	"github.com/ulp/backend/internal/eventbus"
 	"github.com/ulp/backend/internal/repository"
-	"github.com/google/uuid"
 )
 
 type NudgeService struct {

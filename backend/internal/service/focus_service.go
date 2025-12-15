@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/ulp/backend/internal/domain"
 	"github.com/ulp/backend/internal/eventbus"
-	"github.com/google/uuid"
 )
 
 var (

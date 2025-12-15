@@ -8,17 +8,17 @@ import (
 
 // Profile represents a user profile in the system
 type Profile struct {
-	ID               uuid.UUID  `json:"id"`
-	Email            string     `json:"email"`
-	DisplayName      string     `json:"display_name"`
-	AvatarURL        *string    `json:"avatar_url"`
-	IsEduVerified    bool       `json:"is_edu_verified"`
-	Timezone         string     `json:"timezone"`
-	ConsistencyScore int        `json:"consistency_score"`
-	CurrentStreak    int        `json:"current_streak"`
-	LongestStreak    int        `json:"longest_streak"`
-	CreatedAt        time.Time  `json:"created_at"`
-	UpdatedAt        time.Time  `json:"updated_at"`
+	ID               uuid.UUID `json:"id"`
+	Email            string    `json:"email"`
+	DisplayName      string    `json:"display_name"`
+	AvatarURL        *string   `json:"avatar_url"`
+	IsEduVerified    bool      `json:"is_edu_verified"`
+	Timezone         string    `json:"timezone"`
+	ConsistencyScore int       `json:"consistency_score"`
+	CurrentStreak    int       `json:"current_streak"`
+	LongestStreak    int       `json:"longest_streak"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 // PublicProfile contains limited profile fields for public viewing

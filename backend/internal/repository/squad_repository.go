@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"strings"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
 )
 
 // SquadRepository handles database operations for squads
@@ -81,7 +81,7 @@ func (r *SquadRepository) GetDetailByID(ctx context.Context, squadID uuid.UUID) 
 		SELECT id, name, description, invite_code, owner_id, max_members, created_at
 		FROM squads WHERE id = $1
 	`
-	
+
 	detail := &domain.SquadDetail{}
 	err := r.db.QueryRowContext(ctx, squadQuery, squadID).Scan(
 		&detail.ID,
@@ -107,7 +107,7 @@ func (r *SquadRepository) GetDetailByID(ctx context.Context, squadID uuid.UUID) 
 		WHERE sm.squad_id = $1
 		ORDER BY sm.role DESC, sm.joined_at ASC
 	`
-	
+
 	rows, err := r.db.QueryContext(ctx, membersQuery, squadID)
 	if err != nil {
 		return nil, err
@@ -229,7 +229,7 @@ func (r *SquadRepository) JoinByInviteCode(ctx context.Context, inviteCode strin
 		"SELECT public.join_squad($1)",
 		strings.ToUpper(inviteCode),
 	).Scan(&squadID)
-	
+
 	if err != nil {
 		// Parse PostgreSQL error messages
 		errMsg := err.Error()
@@ -273,7 +273,7 @@ func (r *SquadRepository) RegenerateInviteCode(ctx context.Context, squadID uuid
 		"SELECT public.regenerate_invite_code($1)",
 		squadID,
 	).Scan(&newCode)
-	
+
 	if err != nil {
 		errMsg := err.Error()
 		if strings.Contains(errMsg, "not found") {

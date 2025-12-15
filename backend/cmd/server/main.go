@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 	"github.com/ulp/backend/internal/ai"
 	"github.com/ulp/backend/internal/config"
 	"github.com/ulp/backend/internal/eventbus"
@@ -13,10 +17,6 @@ import (
 	"github.com/ulp/backend/internal/middleware"
 	"github.com/ulp/backend/internal/repository"
 	"github.com/ulp/backend/internal/service"
-	"github.com/go-chi/chi/v5"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
-	"github.com/joho/godotenv"
 )
 
 func main() {

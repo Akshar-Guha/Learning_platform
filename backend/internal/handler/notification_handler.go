@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ulp/backend/internal/middleware"
-	"github.com/ulp/backend/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/middleware"
+	"github.com/ulp/backend/internal/service"
 )
 
 type NotificationHandler struct {

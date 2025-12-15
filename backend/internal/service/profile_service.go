@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
 )
 
 var (

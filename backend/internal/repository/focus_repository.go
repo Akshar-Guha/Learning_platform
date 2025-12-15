@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
 )
 
 // FocusRepository handles database operations for focus sessions

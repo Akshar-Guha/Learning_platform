@@ -34,13 +34,13 @@ func (a ActivityType) IsValid() bool {
 
 // StreakData represents comprehensive streak information for a user
 type StreakData struct {
-	UserID           string             `json:"user_id"`
-	CurrentStreak    int                `json:"current_streak"`
-	LongestStreak    int                `json:"longest_streak"`
-	LastActiveDate   *time.Time         `json:"last_active_date,omitempty"`
-	ConsistencyScore int                `json:"consistency_score"`
-	TotalActiveDays  int                `json:"total_active_days"`
-	StreakHistory    []ActivityDay      `json:"streak_history,omitempty"`
+	UserID           string        `json:"user_id"`
+	CurrentStreak    int           `json:"current_streak"`
+	LongestStreak    int           `json:"longest_streak"`
+	LastActiveDate   *time.Time    `json:"last_active_date,omitempty"`
+	ConsistencyScore int           `json:"consistency_score"`
+	TotalActiveDays  int           `json:"total_active_days"`
+	StreakHistory    []ActivityDay `json:"streak_history,omitempty"`
 }
 
 // ActivityDay represents a single day's activity status
@@ -67,11 +67,11 @@ type LogActivityRequest struct {
 
 // LogActivityResponse represents the response after logging activity
 type LogActivityResponse struct {
-	Success        bool      `json:"success"`
-	ActivityID     string    `json:"activity_id"`
-	ActivityDate   time.Time `json:"activity_date"`
-	CurrentStreak  int       `json:"current_streak"`
-	IsNew          bool      `json:"is_new"` // Whether this was a new log or duplicate
+	Success       bool      `json:"success"`
+	ActivityID    string    `json:"activity_id"`
+	ActivityDate  time.Time `json:"activity_date"`
+	CurrentStreak int       `json:"current_streak"`
+	IsNew         bool      `json:"is_new"` // Whether this was a new log or duplicate
 }
 
 // StreakCalculationResult represents the result from calculate_streak() SQL function

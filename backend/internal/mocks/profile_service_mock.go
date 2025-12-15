@@ -3,8 +3,8 @@ package mocks
 import (
 	"context"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
 )
 
 type MockProfileService struct {

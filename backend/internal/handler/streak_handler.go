@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/ulp/backend/internal/domain"
 	"github.com/ulp/backend/internal/middleware"
 	"github.com/ulp/backend/internal/service"
-	"github.com/go-chi/chi/v5"
 )
 
 // StreakHandler handles HTTP requests for streak management

@@ -6,9 +6,9 @@ import (
 
 	"fmt"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+	"github.com/ulp/backend/internal/domain"
 )
 
 // ProfileRepository handles database operations for profiles

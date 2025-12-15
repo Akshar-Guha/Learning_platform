@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ulp/backend/internal/domain"
-	"github.com/ulp/backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
+	"github.com/ulp/backend/internal/middleware"
 )
 
 // SquadHandler handles HTTP requests for squads

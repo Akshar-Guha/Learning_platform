@@ -5,11 +5,11 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/ulp/backend/internal/domain"
 	"github.com/ulp/backend/internal/middleware"
 	"github.com/ulp/backend/internal/service"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 // FocusHandler handles HTTP requests for focus sessions

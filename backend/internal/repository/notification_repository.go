@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
 )
 
 type NotificationRepository struct {

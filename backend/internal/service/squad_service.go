@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/ulp/backend/internal/domain"
 	"github.com/google/uuid"
+	"github.com/ulp/backend/internal/domain"
 )
 
 // SquadService handles business logic for squads

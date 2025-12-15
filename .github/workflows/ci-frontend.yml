@@ -66,7 +66,7 @@ jobs:
       # DEVOPS CONCEPT: Build Artifacts
       - name: Build Web
         working-directory: frontend
-        run: flutter build web --release
+        run: flutter build web --release --verbose
 
       # Step 8: Upload build artifacts
       - name: Upload Web Build

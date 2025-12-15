@@ -1,0 +1,81 @@
+# =============================================================================
+# Deploy Frontend to Vercel - Project ULP
+# =============================================================================
+# This workflow builds Flutter web and deploys to Vercel automatically.
+# Triggered after Frontend CI passes or on direct push to main.
+# =============================================================================
+
+name: Deploy Frontend to Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  workflow_run:
+    workflows: ["Frontend CI"]
+    types: [completed]
+    branches: [main]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    name: Build & Deploy to Vercel
+    runs-on: ubuntu-latest
+    # Only run if triggered by push OR if Frontend CI succeeded
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      # Step 3: Get dependencies
+      - name: Get Dependencies
+        working-directory: frontend
+        run: flutter pub get
+
+      # Step 4: Create .env file from secrets
+      - name: Create .env
+        working-directory: frontend
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+
+      # Step 5: Build Flutter web
+      - name: Build Flutter Web
+        working-directory: frontend
+        run: flutter build web --release --no-tree-shake-icons
+
+      # Step 6: Install Vercel CLI
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      # Step 7: Pull Vercel project settings
+      - name: Pull Vercel Environment
+        working-directory: frontend/build/web
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Step 8: Deploy to Vercel (production)
+      - name: Deploy to Vercel
+        working-directory: frontend/build/web
+        run: |
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+
+      # Step 9: Output deployment URL
+      - name: Deployment Complete
+        run: |
+          echo "✅ Deployed to Vercel!"
+          echo "🌐 URL: https://umbrag.vercel.app"

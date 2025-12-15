@@ -33,6 +33,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   http: ^1.6.0
   timeago: ^3.7.1
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:

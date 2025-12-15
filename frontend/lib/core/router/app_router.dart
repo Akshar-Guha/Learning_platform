@@ -8,6 +8,7 @@ import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/focus/presentation/screens/focus_room_screen.dart';
 import '../../features/home/presentation/screens/home_shell.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/landing/presentation/screens/landing_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/squads/presentation/screens/squads_screen.dart';
@@ -19,7 +20,8 @@ import '../../features/notifications/presentation/screens/notifications_screen.d
 
 /// Route paths - centralized for consistency
 class AppRoutes {
-  static const String splash = '/';
+  static const String landing = '/';
+  static const String splash = '/splash';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String home = '/home';
@@ -38,44 +40,46 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authNotifierProvider);
 
   return GoRouter(
-    initialLocation: AppRoutes.splash,
+    initialLocation: AppRoutes.landing,
     debugLogDiagnostics: true,
     redirect: (context, state) {
+      final isLanding = state.matchedLocation == AppRoutes.landing;
       final isLoggingIn = state.matchedLocation == AppRoutes.login;
       final isSigningUp = state.matchedLocation == AppRoutes.signup;
       final isSplash = state.matchedLocation == AppRoutes.splash;
 
-      // If loading/initial, allow splash AND login/signup pages
-      // (so splash timeout can redirect to login)
-      if (authState.status == AuthStatus.loading ||
-          authState.status == AuthStatus.initial) {
-        // Allow navigation to auth pages, only redirect others to splash
-        if (isSplash || isLoggingIn || isSigningUp) {
-          return null;
-        }
-        return AppRoutes.splash;
-      }
-
       final isAuthenticated = authState.status == AuthStatus.authenticated;
 
-      // If not authenticated, redirect to login (unless already on login/signup)
-      if (!isAuthenticated) {
-        // Allow staying on login/signup pages
-        if (isLoggingIn || isSigningUp) {
-          return null;
-        }
-        // Redirect splash and all other pages to login
-        return AppRoutes.login;
+      // If authenticated and on public pages (landing, login, signup, splash), redirect to home
+      if (isAuthenticated && (isLanding || isLoggingIn || isSigningUp || isSplash)) {
+        return AppRoutes.home;
       }
 
-      // If authenticated and on auth pages (including splash), redirect to home
-      if (isAuthenticated && (isLoggingIn || isSigningUp || isSplash)) {
-        return AppRoutes.home;
+      // If not authenticated, allow landing, login, signup pages
+      if (!isAuthenticated) {
+        if (isLanding || isLoggingIn || isSigningUp || isSplash) {
+          return null;
+        }
+        // Redirect protected pages to landing
+        return AppRoutes.landing;
       }
 
       return null;
     },
     routes: [
+      // Landing Screen (Marketing page)
+      GoRoute(
+        path: AppRoutes.landing,
+        name: 'landing',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const LandingScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      ),
+
       // Splash Screen
       GoRoute(
         path: AppRoutes.splash,
@@ -104,7 +108,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ).animate(CurvedAnimation(
                 parent: animation,
                 curve: Curves.easeOutCubic,
-              )),
+              ),),
               child: child,
             );
           },
@@ -126,7 +130,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ).animate(CurvedAnimation(
                 parent: animation,
                 curve: Curves.easeOutCubic,
-              )),
+              ),),
               child: child,
             );
           },

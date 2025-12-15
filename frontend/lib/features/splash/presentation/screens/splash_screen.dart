@@ -161,7 +161,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                        textAlign: TextAlign.center,
                        style: const TextStyle(color: Colors.red, fontSize: 12),
                      );
-                  }),
+                  },),
                 ],
               ),
             ),

@@ -370,7 +370,7 @@ class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen> {
               displayName: 'Member', // Would need to join with profiles
               isFocusing: s.isActive,
               durationMinutes: DateTime.now().difference(s.startedAt).inMinutes,
-            )).toList();
+            ),).toList();
             
             if (presenceItems.isEmpty) {
               return Container(

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/config/app_config.dart';
+import '../../../../core/config/app_config.dart';
 import '../../domain/models/squad.dart';
 import '../../domain/repositories/squad_repository.dart';
 

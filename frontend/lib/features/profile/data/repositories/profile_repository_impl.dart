@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -8,19 +7,24 @@ import '../../domain/models/profile.dart';
 import '../../domain/repositories/profile_repository.dart';
 
 /// Profile repository implementation using Go Backend API
-/// Follows Alpha's API contract: /api/v1/profile/me, /api/v1/profile/{userID}
+/// All operations go through the backend - no direct Supabase calls
 class ProfileRepositoryImpl implements ProfileRepository {
   final SupabaseClient _supabase;
+  final http.Client _httpClient;
 
-  ProfileRepositoryImpl({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+  ProfileRepositoryImpl({SupabaseClient? supabase, http.Client? httpClient})
+      : _supabase = supabase ?? Supabase.instance.client,
+        _httpClient = httpClient ?? http.Client();
 
   /// Get authorization headers with Supabase JWT
-  Map<String, String> get _headers {
+  Map<String, String> _getHeaders() {
     final session = _supabase.auth.currentSession;
+    if (session?.accessToken == null) {
+      throw Exception('Not authenticated');
+    }
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${session?.accessToken ?? ''}',
+      'Authorization': 'Bearer ${session!.accessToken}',
     };
   }
 
@@ -28,73 +32,72 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Profile> getCurrentProfile() async {
-    try {
-      // Call Go backend API directly
-      final response = await http.get(
-        Uri.parse('$_baseUrl/profile/me'),
-        headers: _headers,
-      );
+    final response = await _httpClient.get(
+      Uri.parse('$_baseUrl/profile/me'),
+      headers: _getHeaders(),
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        return Profile.fromJson(data);
-      }
-
-      // If backend fails, try direct Supabase query as fallback
-      if (response.statusCode == 404 || response.statusCode >= 500) {
-        return await _getProfileFromSupabase();
-      }
-
-      throw Exception('Failed to get profile: ${response.statusCode} - ${response.body}');
-    } catch (e) {
-      // Network error - fallback to Supabase
-      debugPrint('⚠️ Backend API error, falling back to Supabase: $e');
-      return await _getProfileFromSupabase();
-    }
-  }
-
-  /// Fallback: Get profile directly from Supabase
-  Future<Profile> _getProfileFromSupabase() async {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) {
-      throw Exception('User not authenticated');
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return Profile.fromJson(data);
     }
 
-    final data = await _supabase
-        .from('profiles')
-        .select()
-        .eq('id', userId)
-        .single();
-
-    return Profile.fromJson(data);
+    throw _parseError(response);
   }
 
   @override
   Future<Profile> updateProfile(UpdateProfileRequest request) async {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) {
-      throw Exception('User not authenticated');
+    final body = <String, dynamic>{};
+    if (request.displayName != null) body['display_name'] = request.displayName;
+    if (request.avatarUrl != null) body['avatar_url'] = request.avatarUrl;
+    if (request.timezone != null) body['timezone'] = request.timezone;
+
+    final response = await _httpClient.patch(
+      Uri.parse('$_baseUrl/profile/me'),
+      headers: _getHeaders(),
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return Profile.fromJson(data);
     }
 
-    // Direct Supabase update (RLS protects this)
-    final data = await _supabase
-        .from('profiles')
-        .update(request.toJson())
-        .eq('id', userId)
-        .select()
-        .single();
-
-    return Profile.fromJson(data);
+    throw _parseError(response);
   }
 
   @override
   Future<PublicProfile> getPublicProfile(String userId) async {
-    final data = await _supabase
-        .from('profiles')
-        .select('id, display_name, avatar_url, is_edu_verified, consistency_score')
-        .eq('id', userId)
-        .single();
+    final response = await _httpClient.get(
+      Uri.parse('$_baseUrl/profile/$userId'),
+      headers: _getHeaders(),
+    );
 
-    return PublicProfile.fromJson(data);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return PublicProfile.fromJson(data);
+    }
+
+    throw _parseError(response);
+  }
+
+  /// Parse error response from backend
+  Exception _parseError(http.Response response) {
+    try {
+      final data = jsonDecode(response.body);
+      final code = data['code'] as String? ?? 'UNKNOWN_ERROR';
+      final message = data['error'] as String? ?? 'An error occurred';
+      
+      switch (code) {
+        case 'PROFILE_NOT_FOUND':
+          return Exception('Profile not found');
+        case 'UNAUTHORIZED':
+          return Exception('Please log in again');
+        default:
+          return Exception(message);
+      }
+    } catch (_) {
+      return Exception('Request failed: ${response.statusCode}');
+    }
   }
 }

@@ -50,11 +50,11 @@ func (s *SquadService) CreateSquad(ctx context.Context, userID uuid.UUID, req *d
 	return nil, fmt.Errorf("failed to generate unique invite code after %d attempts", maxRetries)
 }
 
-// generateInviteCode creates a random 6-character alphanumeric code
+// generateInviteCode creates a random 8-character alphanumeric code
 func generateInviteCode() string {
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-	b := make([]byte, 6)
+	b := make([]byte, 8)
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}

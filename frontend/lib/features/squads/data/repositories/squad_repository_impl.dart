@@ -1,178 +1,193 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../domain/models/squad.dart';
 import '../../domain/repositories/squad_repository.dart';
 
 /// Squad repository implementation using Go Backend API
+/// All operations go through the backend - no direct Supabase calls
 class SquadRepositoryImpl implements SquadRepository {
   final SupabaseClient _supabase;
+  final http.Client _httpClient;
 
-  SquadRepositoryImpl({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+  SquadRepositoryImpl({SupabaseClient? supabase, http.Client? httpClient})
+      : _supabase = supabase ?? Supabase.instance.client,
+        _httpClient = httpClient ?? http.Client();
 
+  /// Get authorization headers with current user's JWT token
+  Map<String, String> _getHeaders() {
+    final token = _supabase.auth.currentSession?.accessToken;
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+    return {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+  }
+
+  /// Base URL for API calls
+  String get _baseUrl => AppConfig.apiBaseUrl;
 
   @override
   Future<List<Squad>> getMySquads() async {
-    // Direct Supabase query for now (fallback until Go API is connected)
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) throw Exception('Not authenticated');
+    final response = await _httpClient.get(
+      Uri.parse('$_baseUrl/squads'),
+      headers: _getHeaders(),
+    );
 
-    final response = await _supabase
-        .from('squad_members')
-        .select('squad_id, squads(*)')
-        .eq('user_id', userId);
-
-    final squads = <Squad>[];
-    for (final row in response as List) {
-      if (row['squads'] != null) {
-        final squadData = row['squads'] as Map<String, dynamic>;
-        // Get member count
-        final countResponse = await _supabase
-            .from('squad_members')
-            .select()
-            .eq('squad_id', squadData['id'])
-            .count(CountOption.exact);
-        squadData['member_count'] = countResponse.count;
-        squads.add(Squad.fromJson(squadData));
-      }
+    if (response.statusCode != 200) {
+      throw _parseError(response);
     }
-    return squads;
+
+    final data = jsonDecode(response.body);
+    final squadsJson = data['data'] as List? ?? [];
+    return squadsJson.map((json) => Squad.fromJson(json)).toList();
   }
 
   @override
   Future<SquadDetail> getSquadDetail(String squadId) async {
-    final squadResponse = await _supabase
-        .from('squads')
-        .select()
-        .eq('id', squadId)
-        .single();
+    final response = await _httpClient.get(
+      Uri.parse('$_baseUrl/squads/$squadId'),
+      headers: _getHeaders(),
+    );
 
-    final membersResponse = await _supabase
-        .from('squad_members')
-        .select('user_id, role, joined_at, profiles(display_name, avatar_url)')
-        .eq('squad_id', squadId);
+    if (response.statusCode != 200) {
+      throw _parseError(response);
+    }
 
-    final members = (membersResponse as List).map((m) {
-      final profile = m['profiles'] as Map<String, dynamic>?;
-      return {
-        'user_id': m['user_id'],
-        'role': m['role'],
-        'joined_at': m['joined_at'],
-        'display_name': profile?['display_name'] ?? 'Unknown',
-        'avatar_url': profile?['avatar_url'],
-      };
-    }).toList();
-
-    squadResponse['members'] = members;
-    return SquadDetail.fromJson(squadResponse);
+    return SquadDetail.fromJson(jsonDecode(response.body));
   }
 
   @override
   Future<Squad> createSquad(CreateSquadRequest request) async {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) throw Exception('Not authenticated');
+    final response = await _httpClient.post(
+      Uri.parse('$_baseUrl/squads'),
+      headers: _getHeaders(),
+      body: jsonEncode({
+        'name': request.name,
+        'description': request.description,
+      }),
+    );
 
-    // Generate invite code
-    final inviteCode = _generateInviteCode();
+    if (response.statusCode != 201) {
+      throw _parseError(response);
+    }
 
-    final response = await _supabase.from('squads').insert({
-      'name': request.name,
-      'description': request.description,
-      'invite_code': inviteCode,
-      'owner_id': userId,
-    }).select().single();
-
-    // Add owner as first member
-    await _supabase.from('squad_members').insert({
-      'squad_id': response['id'],
-      'user_id': userId,
-      'role': 'owner',
-    });
-
-    response['member_count'] = 1;
-    return Squad.fromJson(response);
+    return Squad.fromJson(jsonDecode(response.body));
   }
 
   @override
   Future<Squad> updateSquad(String squadId, UpdateSquadRequest request) async {
-    final updates = <String, dynamic>{};
-    if (request.name != null) updates['name'] = request.name;
-    if (request.description != null) updates['description'] = request.description;
+    final body = <String, dynamic>{};
+    if (request.name != null) body['name'] = request.name;
+    if (request.description != null) body['description'] = request.description;
 
-    final response = await _supabase
-        .from('squads')
-        .update(updates)
-        .eq('id', squadId)
-        .select()
-        .single();
+    final response = await _httpClient.patch(
+      Uri.parse('$_baseUrl/squads/$squadId'),
+      headers: _getHeaders(),
+      body: jsonEncode(body),
+    );
 
-    return Squad.fromJson(response);
+    if (response.statusCode != 200) {
+      throw _parseError(response);
+    }
+
+    return Squad.fromJson(jsonDecode(response.body));
   }
 
   @override
   Future<void> deleteSquad(String squadId) async {
-    await _supabase.from('squads').delete().eq('id', squadId);
+    final response = await _httpClient.delete(
+      Uri.parse('$_baseUrl/squads/$squadId'),
+      headers: _getHeaders(),
+    );
+
+    if (response.statusCode != 200) {
+      throw _parseError(response);
+    }
   }
 
   @override
   Future<Squad> joinSquad(JoinSquadRequest request) async {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) throw Exception('Not authenticated');
+    final response = await _httpClient.post(
+      Uri.parse('$_baseUrl/squads/join'),
+      headers: _getHeaders(),
+      body: jsonEncode({
+        'invite_code': request.inviteCode,
+      }),
+    );
 
-    // Find squad by invite code
-    final squadResponse = await _supabase
-        .from('squads')
-        .select()
-        .eq('invite_code', request.inviteCode)
-        .single();
-
-    final squadId = squadResponse['id'] as String;
-
-    // Check member count
-    final countResponse = await _supabase
-        .from('squad_members')
-        .select()
-        .eq('squad_id', squadId)
-        .count(CountOption.exact);
-
-    final maxMembers = squadResponse['max_members'] as int? ?? 4;
-    if (countResponse.count >= maxMembers) {
-      throw Exception('Squad is full');
+    if (response.statusCode != 200) {
+      throw _parseError(response);
     }
 
-    // Add member
-    await _supabase.from('squad_members').insert({
-      'squad_id': squadId,
-      'user_id': userId,
-      'role': 'member',
-    });
-
-    squadResponse['member_count'] = countResponse.count + 1;
-    return Squad.fromJson(squadResponse);
+    return Squad.fromJson(jsonDecode(response.body));
   }
 
   @override
   Future<void> removeMember(String squadId, String userId) async {
-    await _supabase
-        .from('squad_members')
-        .delete()
-        .eq('squad_id', squadId)
-        .eq('user_id', userId);
+    final response = await _httpClient.delete(
+      Uri.parse('$_baseUrl/squads/$squadId/members/$userId'),
+      headers: _getHeaders(),
+    );
+
+    if (response.statusCode != 200) {
+      throw _parseError(response);
+    }
   }
 
   @override
   Future<String> regenerateInviteCode(String squadId) async {
-    final newCode = _generateInviteCode();
-    await _supabase
-        .from('squads')
-        .update({'invite_code': newCode})
-        .eq('id', squadId);
-    return newCode;
+    final response = await _httpClient.post(
+      Uri.parse('$_baseUrl/squads/$squadId/regenerate-code'),
+      headers: _getHeaders(),
+    );
+
+    if (response.statusCode != 200) {
+      throw _parseError(response);
+    }
+
+    final data = jsonDecode(response.body);
+    return data['invite_code'] as String;
   }
 
-  String _generateInviteCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = DateTime.now().millisecondsSinceEpoch;
-    return List.generate(8, (i) => chars[(random + i * 7) % chars.length]).join();
+  /// Parse error response from backend
+  Exception _parseError(http.Response response) {
+    try {
+      final data = jsonDecode(response.body);
+      final code = data['code'] as String? ?? 'UNKNOWN_ERROR';
+      final message = data['error'] as String? ?? 'An error occurred';
+      
+      // Map backend error codes to user-friendly messages
+      switch (code) {
+        case 'SQUAD_NOT_FOUND':
+          return Exception('Squad not found');
+        case 'NOT_OWNER':
+          return Exception('Only squad owner can perform this action');
+        case 'NOT_MEMBER':
+          return Exception('You are not a member of this squad');
+        case 'SQUAD_FULL':
+          return Exception('Squad is full');
+        case 'ALREADY_MEMBER':
+          return Exception('You are already a member of this squad');
+        case 'INVALID_INVITE_CODE':
+          return Exception('Invalid invite code');
+        case 'CANNOT_KICK_OWNER':
+          return Exception('Cannot kick squad owner');
+        case 'NAME_REQUIRED':
+          return Exception('Squad name is required');
+        case 'NAME_TOO_LONG':
+          return Exception('Squad name must be 50 characters or less');
+        case 'UNAUTHORIZED':
+          return Exception('Please log in again');
+        default:
+          return Exception(message);
+      }
+    } catch (_) {
+      return Exception('Request failed: ${response.statusCode}');
+    }
   }
 }

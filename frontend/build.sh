@@ -1,12 +1,22 @@
 #!/bin/bash
 # Vercel Build Script for Flutter Web
-# This script generates the .env file from Vercel environment variables
-# and then builds the Flutter web app
+# This script installs Flutter, generates .env, and builds the app
+
+set -e  # Exit on error
+
+echo "🔧 Installing Flutter SDK..."
+
+# Install Flutter
+git clone https://github.com/flutter/flutter.git -b stable --depth 1 /tmp/flutter
+export PATH="/tmp/flutter/bin:$PATH"
+
+echo "📦 Flutter version:"
+flutter --version
 
 echo "🔧 Generating .env from Vercel environment variables..."
 
 # Create .env file from Vercel environment variables
-cat > .env << EOF
+cat > .env <<EOF
 SUPABASE_URL=${SUPABASE_URL}
 SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
 API_BASE_URL=${API_BASE_URL}

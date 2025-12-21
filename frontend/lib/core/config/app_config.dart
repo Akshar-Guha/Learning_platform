@@ -1,3 +1,4 @@
+// Build timestamp: 2025-12-21 21:59:50
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Application configuration loaded from environment variables.
@@ -22,3 +23,4 @@ class AppConfig {
   static const bool enableEduVerification = true;
   static const int maxSquadSize = 4;
 }
+

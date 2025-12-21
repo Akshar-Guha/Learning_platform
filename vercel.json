@@ -1,8 +1,8 @@
 {
   "outputDirectory": "frontend/build/web",
   "framework": null,
-  "buildCommand": "",
-  "installCommand": "",
+  "buildCommand": "cd frontend && chmod +x build.sh && ./build.sh",
+  "installCommand": "cd frontend && flutter pub get",
   "rewrites": [
     {
       "source": "/((?!api/.*).*)",

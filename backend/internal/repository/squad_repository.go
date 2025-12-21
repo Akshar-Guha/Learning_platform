@@ -222,12 +222,13 @@ func (r *SquadRepository) Delete(ctx context.Context, squadID uuid.UUID) error {
 	return err
 }
 
-// JoinByInviteCode joins a squad using invite code (calls DB function)
+// JoinByInviteCode joins a squad using invite code (calls backend-compatible DB function)
 func (r *SquadRepository) JoinByInviteCode(ctx context.Context, inviteCode string, userID uuid.UUID) (uuid.UUID, error) {
 	var squadID uuid.UUID
 	err := r.db.QueryRowContext(ctx,
-		"SELECT public.join_squad($1)",
+		"SELECT public.join_squad_backend($1, $2)",
 		strings.ToUpper(inviteCode),
+		userID,
 	).Scan(&squadID)
 
 	if err != nil {

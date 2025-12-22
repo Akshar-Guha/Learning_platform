@@ -117,7 +117,7 @@ class FocusRepositoryImpl implements FocusRepository {
           ? DateTime.parse(item['ended_at'] as String) 
           : null,
       durationMinutes: item['duration_minutes'] as int? ?? 0,
-    )).toList();
+    ),).toList();
   }
 
   @override

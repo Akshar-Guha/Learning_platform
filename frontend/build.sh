@@ -6,8 +6,8 @@ set -e  # Exit on error
 
 echo "🔧 Installing Flutter SDK..."
 
-# Install Flutter
-git clone https://github.com/flutter/flutter.git -b stable --depth 1 /tmp/flutter
+# Install Flutter - use specific version for stability
+git clone https://github.com/flutter/flutter.git -b 3.24.0 --depth 1 /tmp/flutter
 export PATH="/tmp/flutter/bin:$PATH"
 
 echo "📦 Flutter version:"
@@ -31,6 +31,10 @@ echo "📦 Installing Flutter dependencies..."
 flutter pub get
 
 echo "🏗️ Building Flutter web app..."
-flutter build web --release
+flutter build web --release 2>&1 || {
+    echo "❌ Build failed. Running analyze for diagnostics..."
+    flutter analyze --no-fatal-infos 2>&1 || true
+    exit 1
+}
 
 echo "✅ Build complete!"

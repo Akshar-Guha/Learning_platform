@@ -85,7 +85,7 @@ class CTASection extends StatelessWidget {
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: isDesktop ? 500 : double.infinity),
                   child: Text(
-                    'Join thousands of students who\'ve transformed their learning habits with the power of accountability.',
+                    'Set goals, get AI-generated schedules, track focus hours with your squad, and build streaks that stick.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: isDesktop ? 18 : 15,
@@ -161,9 +161,9 @@ class CTASection extends StatelessWidget {
 
   Widget _buildTrustBadges(bool isDesktop) {
     final badges = [
-      '🔒 Bank-Level Security',
-      '⚡ No Credit Card Required',
-      '🎯 Cancel Anytime',
+      '🤖 AI-Powered Insights',
+      '🔒 Secure & Private',
+      '🎯 Free Forever',
     ];
 
     return Wrap(

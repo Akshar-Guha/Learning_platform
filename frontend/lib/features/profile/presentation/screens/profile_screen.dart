@@ -10,6 +10,9 @@ import '../widgets/profile_edit_sheet.dart';
 import '../widgets/profile_stat_card.dart';
 import '../../../streaks/presentation/providers/streak_providers.dart';
 import '../../../streaks/presentation/widgets/streak_widgets.dart';
+import '../../../goals/presentation/providers/goals_providers.dart';
+import '../../../goals/presentation/widgets/active_goal_card.dart'; // For CompactGoalCard
+import '../../../goals/presentation/widgets/create_goal_form.dart';
 
 /// Profile Screen - View and edit own profile
 class ProfileScreen extends ConsumerWidget {
@@ -212,6 +215,11 @@ class ProfileScreen extends ConsumerWidget {
 
           const SizedBox(height: 32),
 
+          // My Goals Section
+          _buildGoalsSection(context, ref),
+
+          const SizedBox(height: 32),
+
           // Streak Calendar
           ref.watch(currentUserStreakProvider).when(
                 data: (streak) => StreakCalendar(history: streak.history)
@@ -266,6 +274,104 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ],
     ).animate().fadeIn(delay: 300.ms);
+  }
+
+  Widget _buildGoalsSection(BuildContext context, WidgetRef ref) {
+    final goalsAsync = ref.watch(userGoalsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'My Goals',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimaryDark,
+              ),
+            ),
+            GestureDetector(
+              onTap: () => _showCreateGoalSheet(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryPurple.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.add, size: 14, color: AppTheme.primaryPurple),
+                    SizedBox(width: 4),
+                    Text(
+                      'Add Goal',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryPurple,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        goalsAsync.when(
+          data: (goals) {
+            if (goals.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppTheme.darkCard.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                      color: AppTheme.textSecondaryDark.withOpacity(0.1)),
+                ),
+                child: Column(
+                  children: [
+                    Icon(Iconsax.task_square,
+                        size: 32,
+                        color: AppTheme.textSecondaryDark.withOpacity(0.5)),
+                    const SizedBox(height: 8),
+                    Text(
+                      'No active goals',
+                      style: TextStyle(
+                          color: AppTheme.textSecondaryDark.withOpacity(0.7)),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return Column(
+              children: goals
+                  .map((goal) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: CompactGoalCard(goal: goal),
+                      ))
+                  .toList(),
+            );
+          },
+          loading: () => const Center(
+              child: CircularProgressIndicator(color: AppTheme.primaryPurple)),
+          error: (e, _) => Text('Error loading goals: $e',
+              style: const TextStyle(color: AppTheme.error)),
+        ),
+      ],
+    ).animate().fadeIn(delay: 250.ms);
+  }
+
+  void _showCreateGoalSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const CreateGoalForm(),
+    );
   }
 
   void _showEditSheet(BuildContext context, WidgetRef ref) {

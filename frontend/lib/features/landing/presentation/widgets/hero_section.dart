@@ -184,7 +184,7 @@ class HeroSection extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: isDesktop ? 600 : double.infinity),
       child: Text(
-        'Join Squads of 4. Build streaks together. Get verified discipline metrics that recruiters actually trust.',
+        'Join Squads of 4. Set study goals with AI-generated schedules. Track focus hours, get session insights, and build streaks together.',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: isDesktop ? 20 : 16,
@@ -260,9 +260,9 @@ class HeroSection extends StatelessWidget {
 
   Widget _buildQuickStats(bool isDesktop) {
     final stats = [
-      {'value': '90%', 'label': 'Completion Rate'},
-      {'value': '4', 'label': 'Squad Size'},
-      {'value': '24/7', 'label': 'AI Coaching'},
+      {'value': '5', 'label': 'Active Goals Max'},
+      {'value': '∞', 'label': 'Focus Sessions'},
+      {'value': 'AI', 'label': 'Personalized Insights'},
     ];
 
     return Wrap(

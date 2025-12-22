@@ -69,6 +69,8 @@ func main() {
 	focusRepo := repository.NewFocusRepository(db)
 	streakRepo := repository.NewStreakRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
+	goalsRepo := repository.NewGoalsRepository(db)
+	focusStatsRepo := repository.NewFocusStatsRepository(db)
 
 	// Service Layer
 	profileService := service.NewProfileService(profileRepo)
@@ -76,6 +78,7 @@ func main() {
 	focusService := service.NewFocusService(focusRepo, publisher)
 	streakService := service.NewStreakService(streakRepo, publisher)
 	nudgeService := service.NewNudgeService(notificationRepo, groqClient, natsBus)
+	goalsService := service.NewGoalsService(goalsRepo, groqClient)
 
 	// Handler Layer
 	profileHandler := handler.NewProfileHandler(profileService)
@@ -84,6 +87,8 @@ func main() {
 	streakHandler := handler.NewStreakHandler(streakService)
 	notificationHandler := handler.NewNotificationHandler(nudgeService)
 	healthHandler := handler.NewHealthHandler()
+	goalsHandler := handler.NewGoalsHandler(goalsService)
+	focusStatsHandler := handler.NewFocusStatsHandler(focusStatsRepo)
 
 	// Start Background Consumers
 	if natsBus != nil {
@@ -138,6 +143,11 @@ func main() {
 		r.Get("/api/v1/focus/active/{squadID}", focusHandler.GetActiveInSquad)
 		r.Get("/api/v1/focus/history/{squadID}", focusHandler.GetFocusHistory)
 
+		// Focus Stats routes (Dashboard Metrics)
+		r.Get("/api/v1/focus/stats/me", focusStatsHandler.GetMyStats)
+		r.Get("/api/v1/focus/stats/squad/{squadID}", focusStatsHandler.GetSquadStats)
+		r.Get("/api/v1/insights/recent", focusStatsHandler.GetRecentInsights)
+
 		// Streak routes (The Streak Engine)
 		r.Post("/api/v1/streaks/log", streakHandler.LogActivity)
 		r.Get("/api/v1/streaks/me", streakHandler.GetMyStreak)
@@ -148,6 +158,14 @@ func main() {
 		// Notification routes (The Nudge System)
 		r.Get("/api/v1/notifications", notificationHandler.ListNotifications)
 		r.Patch("/api/v1/notifications/{id}/read", notificationHandler.MarkAsRead)
+
+		// Goals routes (AI Study Planner)
+		r.Post("/api/v1/goals", goalsHandler.CreateGoal)
+		r.Get("/api/v1/goals", goalsHandler.ListGoals)
+		r.Get("/api/v1/goals/{goalID}", goalsHandler.GetGoal)
+		r.Patch("/api/v1/goals/{goalID}", goalsHandler.UpdateGoal)
+		r.Delete("/api/v1/goals/{goalID}", goalsHandler.DeleteGoal)
+		r.Post("/api/v1/goals/{goalID}/generate-schedule", goalsHandler.GenerateSchedule)
 	})
 
 	// Start server

@@ -33,3 +33,5 @@ dist/
 # Logs
 *.log
 logs/
+.vercel
+.env*.local

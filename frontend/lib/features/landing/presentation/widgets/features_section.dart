@@ -15,12 +15,12 @@ class FeaturesSection extends StatelessWidget {
     this.features,
   });
 
-  // Default features if none provided
+  // Default features if none provided - showcases ALL app capabilities
   List<FeatureData> get _features => features ?? [
     const FeatureData(
       icon: Iconsax.people,
       title: 'Squad Up',
-      description: 'Form accountability groups of 4. Small enough to care, big enough to motivate. When one rises, all rise.',
+      description: 'Form accountability squads of 4. Small enough to care, big enough to motivate. See who\'s focusing in real-time.',
       gradient: LinearGradient(
         colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
       ),
@@ -29,29 +29,47 @@ class FeaturesSection extends StatelessWidget {
     const FeatureData(
       icon: Iconsax.timer_1,
       title: 'Body Doubling',
-      description: 'See who\'s studying in real-time. No video calls, just presence. Like studying in a silent library, digitally.',
+      description: 'Study alongside others without video calls. Just presence—like a silent library, digitally. Link sessions to goals.',
       gradient: LinearGradient(
         colors: [Color(0xFF06B6D4), Color(0xFF0EA5E9)],
       ),
       iconColor: AppTheme.accentCyan,
     ),
     const FeatureData(
+      icon: Iconsax.calendar_tick,
+      title: 'AI Study Planner',
+      description: 'Set goals with deadlines. Our AI generates optimized daily schedules with 45-52 min focus blocks. Max 4 productive hours/day.',
+      gradient: LinearGradient(
+        colors: [Color(0xFF10B981), Color(0xFF059669)],
+      ),
+      iconColor: AppTheme.success,
+    ),
+    const FeatureData(
+      icon: Iconsax.message_programming,
+      title: 'AI Focus Coach',
+      description: 'Get data-driven insights after each session. Pattern analysis, progress tracking, actionable suggestions—no fluff.',
+      gradient: LinearGradient(
+        colors: [Color(0xFFEC4899), Color(0xFF8B5CF6)],
+      ),
+      iconColor: AppTheme.accentPink,
+    ),
+    const FeatureData(
       icon: Iconsax.flash_1,
       title: 'Streak Engine',
-      description: 'Build consistency with social stakes. Your streak is shared—break it, and everyone knows. That\'s the magic.',
+      description: 'Build consistency with social stakes. Your streak is shared—break it, and your squad knows. That\'s the magic.',
       gradient: LinearGradient(
         colors: [Color(0xFFF59E0B), Color(0xFFEF4444)],
       ),
       iconColor: AppTheme.warning,
     ),
     const FeatureData(
-      icon: Iconsax.message_programming,
-      title: 'AI Coach',
-      description: 'Smart nudges that actually work. Like a gym buddy who knows when you\'re slacking—empathetic, never pushy.',
+      icon: Iconsax.chart_21,
+      title: 'Focus Dashboard',
+      description: 'Track weekly focus hours, session counts, avg duration, and peak focus times. Squad leaderboards show who\'s rising.',
       gradient: LinearGradient(
-        colors: [Color(0xFFEC4899), Color(0xFF8B5CF6)],
+        colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
       ),
-      iconColor: AppTheme.accentPink,
+      iconColor: AppTheme.info,
     ),
   ];
 

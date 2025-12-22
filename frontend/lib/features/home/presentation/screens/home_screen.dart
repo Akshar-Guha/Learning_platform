@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:go_router/go_router.dart';
-
-import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../goals/presentation/providers/goals_providers.dart';
+import '../../../goals/presentation/widgets/active_goal_card.dart';
+import '../../../goals/presentation/widgets/focus_stats_card.dart';
+import '../../../goals/presentation/widgets/latest_insight_card.dart';
+import '../../../goals/presentation/widgets/primary_focus_card.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
 import '../../../streaks/presentation/providers/streak_providers.dart';
 import '../../../streaks/presentation/widgets/streak_widgets.dart';
-import '../widgets/quick_action_card.dart';
 import '../widgets/welcome_header.dart';
 
-/// Home Screen - Main dashboard with streak and quick actions
+/// Home Screen - Purpose-driven dashboard with focus as primary action
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -20,6 +21,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(currentUserProfileProvider);
     final streakAsync = ref.watch(currentUserStreakProvider);
+    final goalsAsync = ref.watch(userGoalsProvider);
     final isCheckingIn = ref.watch(checkInNotifierProvider).isLoading;
 
     return Scaffold(
@@ -39,6 +41,10 @@ class HomeScreen extends ConsumerWidget {
           child: RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(currentUserProfileProvider);
+              ref.invalidate(currentUserStreakProvider);
+              ref.invalidate(userGoalsProvider);
+              ref.invalidate(myFocusStatsProvider);
+              ref.invalidate(recentInsightsProvider);
             },
             color: AppTheme.primaryPurple,
             child: SingleChildScrollView(
@@ -64,15 +70,83 @@ class HomeScreen extends ConsumerWidget {
                       name: 'Explorer',
                       isEduVerified: false,
                     ),
-                  )
-                      .animate()
+                  ).animate()
                       .fadeIn(duration: 400.ms)
                       .slideY(begin: -0.2, end: 0),
 
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 24),
 
-                  // Streak Card with Social Facilitation Psychology
-                  // Streak Card with Social Facilitation Psychology
+                  // Primary Focus Card - Main CTA
+                  const PrimaryFocusCard(),
+
+                  const SizedBox(height: 24),
+
+                  // Focus Stats Card
+                  const FocusStatsCard(),
+
+                  const SizedBox(height: 24),
+
+                  // Active Goals Section
+                  goalsAsync.when(
+                    data: (goals) {
+                      if (goals.isEmpty) return const SizedBox.shrink();
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Active Goals',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textPrimaryDark,
+                                ),
+                              ),
+                              Text(
+                                '${goals.length}/5',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondaryDark.withOpacity(0.7),
+                                ),
+                              ),
+                            ],
+                          )
+                              .animate()
+                              .fadeIn(duration: 400.ms, delay: 200.ms),
+                          const SizedBox(height: 12),
+                          ...goals.take(2).map((goal) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: ActiveGoalCard(
+                                  goal: goal,
+                                  onTap: () {
+                                    // TODO: Navigate to goal detail
+                                  },
+                                  onGenerateSchedule: !goal.aiScheduleGenerated
+                                      ? () async {
+                                          await ref
+                                              .read(generateScheduleNotifierProvider.notifier)
+                                              .generateSchedule(goal.id);
+                                        }
+                                      : null,
+                                ),
+                              )),
+                        ],
+                      );
+                    },
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Latest AI Insight
+                  const LatestInsightCard(),
+
+                  const SizedBox(height: 20),
+
+                  // Streak Card (kept from original)
                   streakAsync.when(
                     data: (streak) => StreakCard(
                       streakData: streak,
@@ -81,81 +155,6 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     loading: () => const Center(child: CircularProgressIndicator()),
                     error: (_, __) => const SizedBox.shrink(),
-                  )
-                      .animate()
-                      .fadeIn(duration: 400.ms, delay: 100.ms)
-                      .slideY(begin: 0.1, end: 0),
-
-                  const SizedBox(height: 28),
-
-                  // Quick Actions Section
-                  const Text(
-                    'Quick Actions',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimaryDark,
-                    ),
-                  )
-                      .animate()
-                      .fadeIn(duration: 400.ms, delay: 200.ms),
-
-                  const SizedBox(height: 16),
-
-                  // Action Cards Grid
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 1.3,
-                    children: [
-                      QuickActionCard(
-                        icon: Icons.play_circle_filled_rounded,
-                        title: 'Start Session',
-                        subtitle: 'Begin body doubling',
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF10B981), Color(0xFF059669)],
-                        ),
-                        onTap: () {
-                          // TODO: Navigate to session
-                        },
-                      ),
-                      QuickActionCard(
-                        icon: Icons.group_add_rounded,
-                        title: 'Find Squad',
-                        subtitle: 'Join or create',
-                        gradient: const LinearGradient(
-                          colors: [AppTheme.primaryPurple, AppTheme.primaryIndigo],
-                        ),
-                        onTap: () {
-                          // TODO: Navigate to squads
-                        },
-                      ),
-                      QuickActionCard(
-                        icon: Icons.insights_rounded,
-                        title: 'Analytics',
-                        subtitle: 'View your stats',
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
-                        ),
-                        onTap: () {
-                          context.push(AppRoutes.leaderboard);
-                        },
-                      ),
-                      QuickActionCard(
-                        icon: Icons.chat_bubble_rounded,
-                        title: 'Squad Chat',
-                        subtitle: 'Message your team',
-                        gradient: const LinearGradient(
-                          colors: [AppTheme.accentCyan, Color(0xFF0891B2)],
-                        ),
-                        onTap: () {
-                          // TODO: Navigate to chat
-                        },
-                      ),
-                    ],
                   )
                       .animate()
                       .fadeIn(duration: 400.ms, delay: 300.ms)

@@ -18,26 +18,26 @@ class HowItWorksSection extends StatelessWidget {
     const HowItWorksStep(
       stepNumber: 1,
       icon: Iconsax.user_add,
-      title: 'Create Account',
-      description: 'Sign up in 30 seconds. No credit card required.',
+      title: 'Sign Up & Join Squad',
+      description: 'Create account in 30 seconds. Join or create a squad of 4.',
     ),
     const HowItWorksStep(
       stepNumber: 2,
-      icon: Iconsax.people,
-      title: 'Join a Squad',
-      description: 'Create or join a squad of 4 like-minded learners.',
+      icon: Iconsax.calendar_tick,
+      title: 'Set Study Goals',
+      description: 'Define up to 5 goals with deadlines. Get AI-generated schedules.',
     ),
     const HowItWorksStep(
       stepNumber: 3,
       icon: Iconsax.timer_start,
-      title: 'Start Focus',
-      description: 'Begin a focus session. Your squad sees you\'re working.',
+      title: 'Focus Together',
+      description: 'Start sessions linked to goals. Your squad sees you\'re working.',
     ),
     const HowItWorksStep(
       stepNumber: 4,
-      icon: Iconsax.medal_star,
-      title: 'Build Streaks',
-      description: 'Maintain daily consistency. Watch your score grow.',
+      icon: Iconsax.chart_21,
+      title: 'Track & Improve',
+      description: 'View focus stats, AI insights, and build streaks together.',
     ),
   ];
 

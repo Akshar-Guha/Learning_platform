@@ -16,27 +16,27 @@ class StatsSection extends StatelessWidget {
 
   List<StatData> get _stats => stats ?? [
     const StatData(
-      value: '90',
-      suffix: '%',
-      label: 'Higher Completion Rate',
-      icon: Iconsax.chart_success,
+      value: '4',
+      suffix: '',
+      label: 'Squad Members Max',
+      icon: Iconsax.people,
+    ),
+    const StatData(
+      value: '5',
+      suffix: '',
+      label: 'Active Goals Max',
+      icon: Iconsax.flag,
+    ),
+    const StatData(
+      value: '52',
+      suffix: 'min',
+      label: 'Optimal Focus Blocks',
+      icon: Iconsax.timer_1,
     ),
     const StatData(
       value: '4',
       suffix: '',
-      label: 'Members Per Squad',
-      icon: Iconsax.people,
-    ),
-    const StatData(
-      value: '10',
-      suffix: 'x',
-      label: 'More Accountability',
-      icon: Iconsax.flash_1,
-    ),
-    const StatData(
-      value: '24',
-      suffix: '/7',
-      label: 'AI Coaching',
+      label: 'AI Insight Types',
       icon: Iconsax.cpu,
     ),
   ];

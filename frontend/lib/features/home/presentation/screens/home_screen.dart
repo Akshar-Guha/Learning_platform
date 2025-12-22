@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../goals/presentation/providers/goals_providers.dart';
 import '../../../goals/presentation/widgets/active_goal_card.dart';
@@ -57,10 +59,10 @@ class HomeScreen extends ConsumerWidget {
 
                   // Welcome Header
                   profileAsync.when(
-                    data: (profile) => WelcomeHeader(
                       name: profile?.displayName ?? 'Explorer',
                       avatarUrl: profile?.avatarUrl,
                       isEduVerified: profile?.isEduVerified ?? false,
+                      onTap: () => context.push(AppRoutes.profile),
                     ),
                     loading: () => const WelcomeHeader(
                       name: 'Loading...',

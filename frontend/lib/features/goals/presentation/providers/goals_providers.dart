@@ -12,10 +12,13 @@ import '../../domain/repositories/goals_repository.dart';
 // GOALS PROVIDERS
 // =============================================================================
 
-/// Provider for user's active goals
-final userGoalsProvider = FutureProvider<List<StudyGoal>>((ref) async {
+/// Provider for user's active goals (Live Updates via Polling)
+final userGoalsProvider = StreamProvider<List<StudyGoal>>((ref) async* {
   final repo = ref.watch(goalsRepositoryProvider);
-  return repo.getGoals(activeOnly: true);
+  while (true) {
+    yield await repo.getGoals(activeOnly: true);
+    await Future.delayed(const Duration(seconds: 15));
+  }
 });
 
 /// Provider for all goals (including completed/archived)
@@ -35,9 +38,12 @@ final goalDetailProvider = FutureProvider.family<StudyGoal, String>((ref, goalId
 // =============================================================================
 
 /// Provider for current user's focus statistics
-final myFocusStatsProvider = FutureProvider<FocusStats>((ref) async {
+final myFocusStatsProvider = StreamProvider<FocusStats>((ref) async* {
   final repo = ref.watch(goalsRepositoryProvider);
-  return repo.getMyStats();
+  while (true) {
+    yield await repo.getMyStats();
+    await Future.delayed(const Duration(seconds: 30));
+  }
 });
 
 /// Provider for squad focus statistics
@@ -47,9 +53,12 @@ final squadFocusStatsProvider = FutureProvider.family<SquadFocusStats, String>((
 });
 
 /// Provider for recent AI insights
-final recentInsightsProvider = FutureProvider<List<SessionInsight>>((ref) async {
+final recentInsightsProvider = StreamProvider<List<SessionInsight>>((ref) async* {
   final repo = ref.watch(goalsRepositoryProvider);
-  return repo.getRecentInsights();
+  while (true) {
+    yield await repo.getRecentInsights();
+    await Future.delayed(const Duration(seconds: 60));
+  }
 });
 
 // =============================================================================

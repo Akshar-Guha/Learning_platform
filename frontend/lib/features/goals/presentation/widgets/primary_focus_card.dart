@@ -110,7 +110,8 @@ class PrimaryFocusCard extends ConsumerWidget {
                 squadsAsync.when(
                   data: (squads) {
                     if (squads.isNotEmpty) {
-                      context.push(AppRoutes.squadDetail(squads.first.id));
+                      // Navigate to focus room (unified flow)
+                      context.go(AppRoutes.focus);
                     } else {
                       // Show snackbar to join squad first
                       ScaffoldMessenger.of(context).showSnackBar(

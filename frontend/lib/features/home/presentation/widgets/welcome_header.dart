@@ -12,7 +12,15 @@ class WelcomeHeader extends StatelessWidget {
     super.key,
     required this.name,
     this.avatarUrl,
+  final bool isEduVerified;
+  final VoidCallback? onTap;
+
+  const WelcomeHeader({
+    super.key,
+    required this.name,
+    this.avatarUrl,
     required this.isEduVerified,
+    this.onTap,
   });
 
   @override
@@ -20,8 +28,10 @@ class WelcomeHeader extends StatelessWidget {
     return Row(
       children: [
         // Avatar
-        Stack(
-          children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Stack(
+            children: [
             Container(
               width: 56,
               height: 56,

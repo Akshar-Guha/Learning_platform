@@ -43,21 +43,35 @@ class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen> {
               // Header
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    const Text(
-                      'Focus Room',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textPrimaryDark,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Iconsax.arrow_left, color: AppTheme.textPrimaryDark),
+                        onPressed: () => context.pop(),
                       ),
-                    ),
-                    const Spacer(),
-                    _buildStatusIndicator(currentSession),
-                  ],
-                ),
-              ).animate().fadeIn(duration: 400.ms),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Focus Room',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimaryDark,
+                        ),
+                      ),
+                      const Spacer(),
+                      
+                      // Manage Squads Button
+                      IconButton(
+                        icon: const Icon(Iconsax.people, color: AppTheme.textPrimaryDark),
+                        onPressed: () => context.push(AppRoutes.squads),
+                        tooltip: 'Manage Squads',
+                      ),
+                      const SizedBox(width: 8),
+
+                      _buildStatusIndicator(currentSession),
+                    ],
+                  ),
+                ).animate().fadeIn(duration: 400.ms),
 
               // Main content
               Expanded(
@@ -339,6 +353,16 @@ class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen> {
             style: TextStyle(
               fontSize: 13,
               color: AppTheme.textSecondaryDark.withOpacity(0.6),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () => context.push(AppRoutes.squads),
+            icon: const Icon(Iconsax.add, size: 18),
+            label: const Text('Join or Create Squad'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryPurple,
+              foregroundColor: Colors.white,
             ),
           ),
         ],

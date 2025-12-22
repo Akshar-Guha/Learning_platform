@@ -3,7 +3,7 @@
   "outputDirectory": "build/web",
   "rewrites": [
     {
-      "source": "/((?!api/.*).*)",
+      "source": "/((?!api/.*|.*\\.(js|json|css|png|jpg|jpeg|gif|ico|svg|ttf|otf|woff|woff2)).*)",
       "destination": "/index.html"
     }
   ],
@@ -14,6 +14,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.js)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
         }
       ]
     }

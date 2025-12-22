@@ -30,9 +30,12 @@ echo "   API_BASE_URL: ${API_BASE_URL}"
 echo "📦 Installing Flutter dependencies..."
 flutter pub get
 
-echo "🏗️ Building Flutter web app..."
-flutter build web --release 2>&1 || {
-    echo "❌ Build failed. Running analyze for diagnostics..."
+echo "🏗️ Building Flutter web app (verbose mode)..."
+flutter build web --release --verbose 2>&1 | tee /tmp/build_output.log || {
+    echo "❌ Build failed. Last 100 lines of output:"
+    tail -100 /tmp/build_output.log
+    echo ""
+    echo "Running analyze for additional diagnostics..."
     flutter analyze --no-fatal-infos 2>&1 || true
     exit 1
 }

@@ -9,6 +9,7 @@ import '../widgets/hero_section.dart';
 import '../widgets/features_section.dart';
 import '../widgets/how_it_works_section.dart';
 import '../widgets/stats_section.dart';
+import '../widgets/stats_for_nerds_section.dart';
 import '../widgets/cta_section.dart';
 
 /// Landing Screen - The main marketing/conversion page
@@ -95,6 +96,11 @@ class _LandingScreenState extends State<LandingScreen> {
               // Stats Section
               const SliverToBoxAdapter(
                 child: StatsSection(),
+              ),
+              
+              // Stats For Nerds Section (Technical Deep-Dive)
+              const SliverToBoxAdapter(
+                child: StatsForNerdsSection(),
               ),
               
               // CTA Section

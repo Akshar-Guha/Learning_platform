@@ -15,7 +15,7 @@ class FeaturesSection extends StatelessWidget {
     this.features,
   });
 
-  // Default features if none provided - showcases ALL app capabilities
+  // Default features if none provided - showcases ALL app capabilities including ML/RAG
   List<FeatureData> get _features => features ?? [
     const FeatureData(
       icon: Iconsax.people,
@@ -29,47 +29,74 @@ class FeaturesSection extends StatelessWidget {
     const FeatureData(
       icon: Iconsax.timer_1,
       title: 'Body Doubling',
-      description: 'Study alongside others without video calls. Just presence—like a silent library, digitally. Link sessions to goals.',
+      description: 'Study alongside others without video calls. Just presence—like a silent library, digitally. Link sessions to goals with auto-pause on tab switch.',
       gradient: LinearGradient(
         colors: [Color(0xFF06B6D4), Color(0xFF0EA5E9)],
       ),
       iconColor: AppTheme.accentCyan,
     ),
     const FeatureData(
-      icon: Iconsax.calendar_tick,
-      title: 'AI Study Planner',
-      description: 'Set goals with deadlines. Our AI generates optimized daily schedules with 45-52 min focus blocks. Max 4 productive hours/day.',
+      icon: Iconsax.book_1,
+      title: 'RAG Knowledge Base',
+      description: 'AI learns from 50+ study techniques stored in vector DB. Semantic search retrieves relevant tips using HuggingFace embeddings (100% free).',
+      gradient: LinearGradient(
+        colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
+      ),
+      iconColor: Color(0xFF8B5CF6),
+    ),
+    const FeatureData(
+      icon: Iconsax.search_normal_1,
+      title: 'Live Internet Search',
+      description: 'Tavily AI searches the web for latest courses, tutorials, and resources. Study planner recommends cutting-edge learning paths (1K free queries/month).',
       gradient: LinearGradient(
         colors: [Color(0xFF10B981), Color(0xFF059669)],
       ),
       iconColor: AppTheme.success,
     ),
     const FeatureData(
-      icon: Iconsax.message_programming,
-      title: 'AI Focus Coach',
-      description: 'Get data-driven insights after each session. Pattern analysis, progress tracking, actionable suggestions—no fluff.',
+      icon: Iconsax.calendar_tick,
+      title: 'AI Study Planner',
+      description: 'LangChain orchestrates Groq LLM + RAG + Search. Generates optimized 45-52 min focus blocks using evidence-based techniques. Max 4 productive hours/day.',
+      gradient: LinearGradient(
+        colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+      ),
+      iconColor: AppTheme.info,
+    ),
+    const FeatureData(
+      icon: Iconsax.cpu,
+      title: 'Focus Coach Agent',
+      description: 'Interactive AI with tool use. Queries your progress, analyzes patterns, and provides real-time guidance. Ask "How am I doing?"—get data-driven answers.',
       gradient: LinearGradient(
         colors: [Color(0xFFEC4899), Color(0xFF8B5CF6)],
       ),
       iconColor: AppTheme.accentPink,
     ),
     const FeatureData(
-      icon: Iconsax.flash_1,
-      title: 'Streak Engine',
-      description: 'Build consistency with social stakes. Your streak is shared—break it, and your squad knows. That\'s the magic.',
+      icon: Iconsax.message_programming,
+      title: 'Session Insights',
+      description: 'Post-session AI analysis: duration vs avg, peak focus time patterns, weekly progress. Pattern recognition without motivational fluff—just facts.',
       gradient: LinearGradient(
         colors: [Color(0xFFF59E0B), Color(0xFFEF4444)],
       ),
       iconColor: AppTheme.warning,
     ),
     const FeatureData(
+      icon: Iconsax.flash_1,
+      title: 'Streak Engine',
+      description: 'Build consistency with social stakes. AI nudges tested via A/B experiments (2 prompts variants). Your streak is shared—break it, and your squad knows.',
+      gradient: LinearGradient(
+        colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+      ),
+      iconColor: Color(0xFFEF4444),
+    ),
+    const FeatureData(
       icon: Iconsax.chart_21,
       title: 'Focus Dashboard',
-      description: 'Track weekly focus hours, session counts, avg duration, and peak focus times. Squad leaderboards show who\'s rising.',
+      description: 'Track weekly focus hours, session counts, avg duration, peak times. Squad leaderboards + fine-tuned models (trained on your successful nudges).',
       gradient: LinearGradient(
-        colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+        colors: [Color(0xFF06B6D4), Color(0xFF0891B2)],
       ),
-      iconColor: AppTheme.info,
+      iconColor: AppTheme.accentCyan,
     ),
   ];
 
@@ -181,9 +208,9 @@ class FeaturesSection extends StatelessWidget {
   }
 
   Widget _buildFeaturesGrid(bool isDesktop, bool isTablet) {
-    // Determine grid columns
-    final int crossAxisCount = isDesktop ? 4 : (isTablet ? 2 : 1);
-    final double childAspectRatio = isDesktop ? 0.85 : (isTablet ? 0.95 : 1.1);
+    // Determine grid columns - 3x3 grid on desktop for 9 features
+    final int crossAxisCount = isDesktop ? 3 : (isTablet ? 2 : 1);
+    final double childAspectRatio = isDesktop ? 0.9 : (isTablet ? 0.95 : 1.1);
 
     return GridView.builder(
       shrinkWrap: true,

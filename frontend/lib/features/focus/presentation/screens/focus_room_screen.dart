@@ -187,22 +187,24 @@ class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen>
       ),
       child: Column(
         children: [
-          // Pulsing focus icon
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppTheme.success.withOpacity(0.2),
-              border: Border.all(color: AppTheme.success, width: 3),
+          // Breathing Animation
+          BreathingAnimation(
+            isActive: true,
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.success.withOpacity(0.2),
+                border: Border.all(color: AppTheme.success, width: 3),
+              ),
+              child: const Icon(
+                Iconsax.activity,
+                size: 36,
+                color: AppTheme.success,
+              ),
             ),
-            child: const Icon(
-              Iconsax.activity,
-              size: 36,
-              color: AppTheme.success,
-            ),
-          ).animate(onPlay: (c) => c.repeat(reverse: true))
-            .scale(begin: const Offset(1, 1), end: const Offset(1.1, 1.1), duration: 1000.ms),
+          ),
           
           const SizedBox(height: 20),
 

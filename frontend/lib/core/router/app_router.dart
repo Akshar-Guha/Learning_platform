@@ -137,23 +137,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
 
-      // Home Screen (Unified Dashboard)
-      GoRoute(
-        path: AppRoutes.home,
-        name: 'home',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          child: const HomeScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        ),
-      ),
 
       // === SHELL ROUTE: Main Navigation with Persistent Bottom Nav ===
       ShellRoute(
         builder: (context, state, child) => HomeShell(child: child),
         routes: [
+          // Home Screen (inside shell - first tab)
+          GoRoute(
+            path: AppRoutes.home,
+            name: 'home',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const HomeScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
+
           // Focus Room (inside shell)
           GoRoute(
             path: AppRoutes.focus,

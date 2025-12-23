@@ -77,7 +77,7 @@
       }
     },
 
-    "GET /api/v1/users/leaderboard": {
+    "GET /api/v1/streaks/leaderboard": {
       "description": "Get top users by consistency score",
       "auth": "Optional",
       "queryParams": {
@@ -98,16 +98,18 @@
           "schema": {
             "type": "object",
             "properties": {
-              "data": {
+              "leaderboard": {
                 "type": "array",
-                "items": { "$ref": "#/definitions/Profile" }
-              },
-              "pagination": {
-                "type": "object",
-                "properties": {
-                  "total": { "type": "integer" },
-                  "limit": { "type": "integer" },
-                  "offset": { "type": "integer" }
+                "items": {
+                  "type": "object",
+                  "properties": {
+                     "user_id": { "type": "string", "format": "uuid" },
+                     "display_name": { "type": "string" },
+                     "avatar_url": { "type": ["string", "null"] },
+                     "current_streak": { "type": "integer" },
+                     "consistency_score": { "type": "integer" },
+                     "rank": { "type": "integer" }
+                  }
                 }
               }
             }

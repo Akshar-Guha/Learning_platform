@@ -150,64 +150,85 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
 
-      // Focus Room
-      GoRoute(
-        path: AppRoutes.focus,
-        name: 'focus',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          child: const FocusRoomScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-              child: child,
-            );
-          },
-        ),
+      // === SHELL ROUTE: Main Navigation with Persistent Bottom Nav ===
+      ShellRoute(
+        builder: (context, state, child) => HomeShell(child: child),
+        routes: [
+          // Focus Room (inside shell)
+          GoRoute(
+            path: AppRoutes.focus,
+            name: 'focus',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const FocusRoomScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
+
+          // Squads Screen (inside shell)
+          GoRoute(
+            path: AppRoutes.squads,
+            name: 'squads',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const SquadsScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
+
+          // Profile Screen (inside shell)
+          GoRoute(
+            path: AppRoutes.profile,
+            name: 'profile',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ProfileScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
+
+          // Leaderboard (inside shell)
+          GoRoute(
+            path: AppRoutes.leaderboard,
+            name: 'leaderboard',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const LeaderboardScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
+
+          // Notifications (inside shell)
+          GoRoute(
+            path: AppRoutes.notifications,
+            name: 'notifications',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const NotificationsScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 1),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+                  child: child,
+                );
+              },
+            ),
+          ),
+        ],
       ),
 
-      // Squads Screen
-      GoRoute(
-        path: AppRoutes.squads,
-        name: 'squads',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          child: const SquadsScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-              child: child,
-            );
-          },
-        ),
-      ),
-
-      // Profile Screen
-      GoRoute(
-        path: AppRoutes.profile,
-        name: 'profile',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          child: const ProfileScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-              child: child,
-            );
-          },
-        ),
-      ),
-
-      // Squad sub-routes (outside shell for full-screen experience)
+      // === FULL-SCREEN ROUTES (Outside Shell) ===
+      // Squad sub-routes (full-screen for better UX)
       GoRoute(
         path: '/home/squads/create',
         name: 'createSquad',
@@ -261,40 +282,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             },
           );
         },
-      ),
-      GoRoute(
-        path: AppRoutes.leaderboard,
-        name: 'leaderboard',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          child: const LeaderboardScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-              child: child,
-            );
-          },
-        ),
-      ),
-      GoRoute(
-        path: AppRoutes.notifications,
-        name: 'notifications',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          child: const NotificationsScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 1),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-              child: child,
-            );
-          },
-        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

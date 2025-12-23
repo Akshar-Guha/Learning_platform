@@ -8,11 +8,6 @@ class WelcomeHeader extends StatelessWidget {
   final String? avatarUrl;
   final bool isEduVerified;
 
-  const WelcomeHeader({
-    super.key,
-    required this.name,
-    this.avatarUrl,
-  final bool isEduVerified;
   final VoidCallback? onTap;
 
   const WelcomeHeader({
@@ -78,7 +73,8 @@ class WelcomeHeader extends StatelessWidget {
                   ),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
 
         const SizedBox(width: 16),

@@ -59,6 +59,7 @@ class HomeScreen extends ConsumerWidget {
 
                   // Welcome Header
                   profileAsync.when(
+                    data: (profile) => WelcomeHeader(
                       name: profile?.displayName ?? 'Explorer',
                       avatarUrl: profile?.avatarUrl,
                       isEduVerified: profile?.isEduVerified ?? false,
@@ -72,9 +73,7 @@ class HomeScreen extends ConsumerWidget {
                       name: 'Explorer',
                       isEduVerified: false,
                     ),
-                  ).animate()
-                      .fadeIn(duration: 400.ms)
-                      .slideY(begin: -0.2, end: 0),
+                  ),
 
                   const SizedBox(height: 24),
 

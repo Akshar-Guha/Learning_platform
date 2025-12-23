@@ -7,7 +7,10 @@ import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../squads/presentation/providers/squad_providers.dart';
 import '../../domain/models/focus_session.dart';
+import '../../domain/services/focus_visibility_service.dart';
+import '../../domain/services/wake_lock_service.dart';
 import '../providers/focus_providers.dart';
+import '../widgets/breathing_animation.dart';
 import '../widgets/focus_widgets.dart';
 
 /// Focus Room Screen - Main presence dashboard
@@ -18,8 +21,38 @@ class FocusRoomScreen extends ConsumerStatefulWidget {
   ConsumerState<FocusRoomScreen> createState() => _FocusRoomScreenState();
 }
 
-class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen> {
+class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen>
+    with WidgetsBindingObserver {
   String? _selectedSquadId;
+  final WakeLockService _wakeLock = WakeLockService();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Mark focus page as active for visibility tracking
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(focusVisibilityServiceProvider).enterFocusPage();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    ref.read(focusVisibilityServiceProvider).leaveFocusPage();
+    _wakeLock.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Handle app going to background/foreground
+    if (state == AppLifecycleState.paused) {
+      // App went to background - could pause focus here
+    } else if (state == AppLifecycleState.resumed) {
+      // App came to foreground
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,34 +73,20 @@ class _FocusRoomScreenState extends ConsumerState<FocusRoomScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Header
+              // Header - simplified since HomeShell provides app bar
               Padding(
                 padding: const EdgeInsets.all(20),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Iconsax.arrow_left, color: AppTheme.textPrimaryDark),
-                        onPressed: () => context.pop(),
-                      ),
-                      const SizedBox(width: 8),
                       const Text(
                         'Focus Room',
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.w700,
                           color: AppTheme.textPrimaryDark,
                         ),
                       ),
                       const Spacer(),
-                      
-                      // Manage Squads Button
-                      IconButton(
-                        icon: const Icon(Iconsax.people, color: AppTheme.textPrimaryDark),
-                        onPressed: () => context.push(AppRoutes.squads),
-                        tooltip: 'Manage Squads',
-                      ),
-                      const SizedBox(width: 8),
-
                       _buildStatusIndicator(currentSession),
                     ],
                   ),

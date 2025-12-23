@@ -10,6 +10,25 @@ import 'core/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Text(
+                'Runtime Error:\n${details.exception}\n\nStack:\n${details.stack}',
+                style: const TextStyle(color: Colors.red, fontSize: 14),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+
   // Load environment variables from .env file (if available)
   try {
     await dotenv.load(fileName: ".env");

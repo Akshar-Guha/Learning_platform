@@ -38,8 +38,6 @@ class StatsForNerdsSection extends StatelessWidget {
           _buildMLPipeline(isDesktop, isTablet),
           const SizedBox(height: 50),
           _buildArchitectureDetails(isDesktop, isTablet),
-          const SizedBox(height: 50),
-          _buildCostBreakdown(isDesktop, isTablet),
         ],
       ),
     );
@@ -408,45 +406,6 @@ class StatsForNerdsSection extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCostRow(String service, String detail, String cost, Color color, {bool isBold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              service,
-              style: TextStyle(
-                fontSize: isBold ? 16 : 15,
-                fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
-                color: AppTheme.textPrimaryDark,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              detail,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppTheme.textSecondaryDark,
-              ),
-            ),
-          ),
-          Text(
-            cost,
-            style: TextStyle(
-              fontSize: isBold ? 18 : 16,
-              fontWeight: FontWeight.w700,
-              color: color,
             ),
           ),
         ],

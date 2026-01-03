@@ -197,52 +197,7 @@ class StatsForNerdsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildCostBreakdown(bool isDesktop, bool isTablet) {
-    return _buildNerdCard(
-      title: '💰 Cost Analysis (100 Users)',
-      isDesktop: isDesktop,
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildCostRow('Chroma (Embedded)', 'Unlimited vectors', '\$0/month', AppTheme.success),
-          _buildCostRow('HuggingFace Embeddings', '30K requests/month', '\$0/month', AppTheme.success),
-          _buildCostRow('Tavily AI Search', '1K requests/month', '\$0/month', AppTheme.success),
-          _buildCostRow('Groq LLM', '6K requests/day', '\$0/month', AppTheme.success),
-          _buildCostRow('Google Colab GPU', 'Fine-tuning (LoRA)', '\$0/month', AppTheme.success),
-          _buildCostRow('Supabase', 'Free tier (500MB DB)', '\$0/month', AppTheme.success),
-          _buildCostRow('Vercel', 'Hobby plan', '\$0/month', AppTheme.success),
-          _buildCostRow('Render', 'Free tier (750hrs/mo)', '\$0/month', AppTheme.success),
-          const Divider(color: AppTheme.darkBorder, height: 32),
-          _buildCostRow('TOTAL', '100 active users', '\$0/month', AppTheme.primaryPurple, isBold: true),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: AppTheme.success.withOpacity(0.1),
-              border: Border.all(color: AppTheme.success.withOpacity(0.3)),
-            ),
-            child: Row(
-              children: [
-                Icon(Iconsax.tick_circle, color: AppTheme.success, size: 20),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    '100% FREE infrastructure until scale (post-MVP). No vendor lock-in—all open source libraries.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textSecondaryDark,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildNerdCard({
     required String title,
